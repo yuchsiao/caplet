@@ -1,0 +1,15 @@
+METAL{
+# name, layer, datatype, height, thickness
+pc    7   0  0.2  0.07  # poly
+m1   15   0  0.4  0.14  # m1  m1
+m2   17   0  0.7  0.14  # m2  m2
+m3   19   0  1.0  0.14  # m3  m3
+}
+
+VIA{
+# layer, datatype, bottom, top
+ca   14   0  pc m1
+v1   16   0  m1 m2  
+v2   18   0  m2 m3
+}
+
