@@ -1,0 +1,7 @@
+Makefile
+*~
+caplet_geo
+ui_*
+*.o
+moc_*
+qrc_*

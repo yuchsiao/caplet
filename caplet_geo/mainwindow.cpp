@@ -27,6 +27,8 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <QErrorMessage>
 #include <QFileInfo>
+#include <QMessageBox>
+#include <QFileDialog>
 
 #include "panelrenderer.h"
 #include "geoloader.h"
