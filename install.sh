@@ -6,6 +6,7 @@ make
 
 echo -e "\e[1;36mCAPLET:\e[m \e[1mMaking caplet_geo and caplet_geo_cli ...\e[m"
 cd ../caplet_geo
+qmake
 make
 make -f MakefileCLI
 
