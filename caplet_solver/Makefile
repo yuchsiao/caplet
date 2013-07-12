@@ -1,7 +1,6 @@
 CXX     = g++
 MPICXX  = mpic++
 LIB     = -lmpi -lpthread -lgfortran -llapack -lblas
-#LIB    += -L./lib 
 FLAG    = -Wall -I$(INCLUDE) -O2
 DEF_OPENMP = -fopenmp -DCAPLET_OPENMP
 DEF_MPI = -DCAPLET_MPI
@@ -38,13 +37,13 @@ capletMPI: $(CAPLET_MPI_OBJ)
 	$(MPICXX) $(LIB) $(FLAG) $(DEF_MPI) -o $(BIN)/$@ $^ 
 
 $(OBJ_MPI)/%.o: $(SRC)/%.cpp
-	$(MPICXX) $(LIB) $(FLAG) $(DEF_MPI) -c $< -o $@
+	$(MPICXX) $(FLAG) $(DEF_MPI) -c $< -o $@
 
 capletOpenMP: $(CAPLET_OPENMP_OBJ)
 	$(MPICXX) $(LIB) $(FLAG) $(DEF_OPENMP) -o $(BIN)/$@ $^
 
 $(OBJ_OPENMP)/%.o: $(SRC)/%.cpp
-	$(MPICXX) $(LIB) $(FLAG) $(DEF_OPENMP) -c $< -o $@
+	$(MPICXX) $(FLAG) $(DEF_OPENMP) -c $< -o $@
 
 copy: 
 	cp $(BIN)/* $(TMP); cp $(EXAMPLE)/* $(TMP)
