@@ -1,9 +1,17 @@
 caplet
 ======
 
-GDS visualization and parallelized capacitance extraction at field-solver accuracy
+GDS visualization and parallelized capacitance extraction toolkit at field-solver accuracy
 
-test
+What is caplet?
+---------------
 
-  cout << "test" << endl;
+
+Organization of caplet
+----------------------
+
+
+Installation
+------------
+
   
