@@ -5,3 +5,5 @@ ui_*
 *.o
 moc_*
 qrc_*
+*.caplet
+*.qui
