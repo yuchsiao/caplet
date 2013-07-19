@@ -91,7 +91,7 @@ python caplet_gds2geo.py -l LAYER_FILE GDS2_FILE
 python caplet_gds2geo.py -l sample.tech cap_inverter.gds
 ```
  
-**`caplet_geo`:** decomposes 2D polygons into non-overlapping 3D rectangles, and generate piecewise constant (PWC) basis functions or instantiable basis functions of your choice. The usage should be straightforward: open a .geo file, select the type of basis function type and parameters for your purpose, and click on **Extract** to extract the capacitance matrix using `caplet_solver`. `caplet_geo` also provides iterative schemes for calculating the finely discreted PWC reference capacitance matrices for accuracy comparison.
+**2. `caplet_geo`:** decomposes 2D polygons into non-overlapping 3D rectangles, and generate piecewise constant (PWC) basis functions or instantiable basis functions of your choice. The usage should be straightforward: open a .geo file, select the type of basis function type and parameters for your purpose, and click on **Extract** to extract the capacitance matrix using `caplet_solver`. `caplet_geo` also provides iterative schemes for calculating the finely discreted PWC reference capacitance matrices for accuracy comparison.
 
 Similar to `caplet_geo`, The Command Line Interface (CLI) version `caplet_geo_cli` also generates either type of basis functions but does not provide visualization. The command line usage is the following:
 
@@ -121,7 +121,7 @@ generates instantiable basis functions with 300nm arch length.
 
 generates piecewise constant basis functions with panel size 100nm.
 
-**`caplet_solver`:** extracts capacitance matrices from `.qui` files which list PWC basis functions or from `.caplet` file which list instantiable basis functions for all conductors.
+**3. `caplet_solver`:** extracts capacitance matrices from `.qui` files which list PWC basis functions or from `.caplet` file which list instantiable basis functions for all conductors.
 
 
 
