@@ -9,7 +9,6 @@ SRC        = src
 OBJ_MPI    = obj/mpi
 OBJ_OPENMP = obj/openmp
 BIN        = bin
-TMP        = tmp
 INCLUDE    = include
 EXAMPLE    = example
 
@@ -27,11 +26,11 @@ CAPLET_OPENMP_OBJ = \
 	$(OBJ_OPENMP)/caplet_widgets.o \
 	$(OBJ_OPENMP)/main.o \
 
-all: capletMPI capletOpenMP copy
+all: capletMPI capletOpenMP 
 
-mpi: capletMPI copy
+mpi: capletMPI 
 
-openmp: capletOpenMP copy
+openmp: capletOpenMP 
 
 capletMPI: $(CAPLET_MPI_OBJ)
 	$(MPICXX) $(LIB) $(FLAG) $(DEF_MPI) -o $(BIN)/$@ $^ 
@@ -45,9 +44,6 @@ capletOpenMP: $(CAPLET_OPENMP_OBJ)
 $(OBJ_OPENMP)/%.o: $(SRC)/%.cpp
 	$(MPICXX) $(FLAG) $(DEF_OPENMP) -c $< -o $@
 
-copy: 
-	cp $(BIN)/* $(TMP); cp $(EXAMPLE)/* $(TMP)
-
 .phony: clean
 clean:
-	rm -rf $(OBJ_MPI)/* $(OBJ_OPENMP)/* $(TMP)/*
+	rm -rf $(OBJ_MPI)/* $(OBJ_OPENMP)/* 
