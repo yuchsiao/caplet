@@ -1,5 +1,6 @@
 Makefile
 *~
+caplet_geo_cli
 caplet_geo
 ui_*
 *.o

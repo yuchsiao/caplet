@@ -1555,7 +1555,7 @@ float Caplet::compareCmatError(const float* const cmatRef, ERROR_REF option) con
 	for ( int i=0; i<n; i++){
 		for ( int j=0; j<n; j++ ){
 
-			float errRef;
+			float errRef = 0.0f;
 			switch (option){
 			case DIAGONAL:
 				errRef = (cmatRef[ i + n*i ]);
