@@ -75,7 +75,7 @@ If problems happen at `caplet_geo`, run `qmake` then `make`.
 Quickstarts
 -----------
 
-`caplet` consists of three parts: **`caplet_gds2geo`, `caplet_geo`, and `caplet_solver`**, each of which, respectively, processes layout `gds' files into geometry `.geo` files, generates basis function files `.qui` or `.caplet`, and extracts and prints performance and capacitance matrices on screen. Each program takes the output file of the previous stage as input.
+`caplet` consists of three parts: `caplet_gds2geo`, `caplet_geo`, and `caplet_solver`, each of which, respectively, processes layout `.gds` files into geometry `.geo` files, generates basis function files `.qui` or `.caplet`, and extracts and prints performance and capacitance matrices on screen. Each program takes the output file of the previous stage as input.
 
 **1. `caplet_gds2geo`:** transforms binary GDSii layout files into ascii geometry definitions, including squares and polygons. The generated geometry files end with `.geo` extension. This program needs an additional file to specify the elevation of each metal layer and connection relationship between layers and vias. The usage is as the following:
 
@@ -179,7 +179,13 @@ Release Notes
 * Fix: Improved installation experience.
 * Fix: Cleaned up several compilation warnings.
 
-______
+_________
+**1.0.1** - 2013-07-12
+
+* Fix: Improved installation by utilizing qmake for caplet_geo.
+* Fix: Updated Makefile in caplet_solver that originally generates linking warnings.
+
+__________
 [**1.0.0** - 2013-02-15](http://sourceforge.net/projects/caplet/files/?source=navbar)
 
 * New: Repackaged caplet into three tools.
@@ -187,7 +193,7 @@ ______
 * New: Simplified installation and uninstallation process.
 * New: Supported Command Line Interface for `caplet_geo` (CLI): `caplet_geo_cli`
 
-______
+__________
 [**0.9.0** - 2013-01-31](http://sourceforge.net/projects/caplet/files/?source=navbar)
     
 * New: Debut
