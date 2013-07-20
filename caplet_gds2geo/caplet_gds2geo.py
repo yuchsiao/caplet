@@ -1,5 +1,8 @@
+#!/usr/bin/python
+
 # AUTHOR: Yu-Chung Hsiao
 # DATE  : Jan. 31, 2013
+# EMAIL : project.caplet@gmail.com
 #
 # This file is part of CAPLET.
 #
@@ -17,7 +20,6 @@
 # along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#! /usr/bin/python
 import argparse
 import sys
 import gdsii.library
