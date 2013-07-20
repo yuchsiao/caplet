@@ -85,8 +85,7 @@ Quickstarts
 python caplet_gds2geo.py -l LAYER_FILE GDS2_FILE
 ```
 
-####Example
-Under folder `caplet_gds2geo`:
+**Example** (under folder `caplet_gds2geo`)
 
 ```
 python caplet_gds2geo.py -l sample.tech cap_inverter.gds
@@ -109,8 +108,7 @@ caplet_geo_cli [--type pwc or ins] [--unit n or u or m or 1] [--size value] file
 
 When `--type pwc`, the output file format and extension is `.qui`, which is compatible with [FASTCAP]. When `--type ins`, the output file ends with extension `.caplet`.
 
-####Example
-Under folder `caplet_geo`
+**Example** (under folder `caplet_geo`)
 
 ```
 ./caplet_geo_cli example/cap_inverter.geo 
@@ -151,8 +149,7 @@ capletOpenMP filename.ext
 
 The number of threads in `capletOpenMP` is fixed after compilation. The parameter is defined as `CAPLET_OPENMP_NUM_THREADS` in `caplet_solver/include/caplet_parameter.h`. Once `caplet_parameter.h` is modified, recompilation is required.
 
-####Example
-Under folder `caplet_solver`
+**Example** (under folder `caplet_solver`)
 Use four cores to extract capacitance out of instantiable basis functions and save the result in `result` (given `mpirun` is in the system path)
 
 ```
