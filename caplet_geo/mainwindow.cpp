@@ -2,7 +2,7 @@
 CREATED : Jan 31, 2013
 MODIFIED: Feb 15, 2013
 AUTHOR  : Yu-Chung Hsiao
-EMAIL   : yuchsiao@mit.edu
+EMAIL   : project.caplet@gmail.com
 
 This file is part of CAPLET.
 
@@ -578,7 +578,7 @@ void MainWindow::on_actionAbout_triggered()
                    "2013.02 <br>"
                    "<br>"
                    "Yu-Chung Hsiao <br>"
-                   "yuchsiao@mit.edu"
+                   "project.caplet@gmail.com"
                    "<br>"
                    "GNU LGPL v3.0");
     QPixmap img("icons/icon2.png");

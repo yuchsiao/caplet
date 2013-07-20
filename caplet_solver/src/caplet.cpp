@@ -1,8 +1,8 @@
 /*
-Created : Jul 28, 2010
-Modified: Feb 13, 2013
+Created : 2010-07-28
+Modified: 2013-07-19, 2013-02-13
 Author  : Yu-Chung Hsiao
-Email   : yuchsiao@mit.edu
+Email   : project.caplet@gmail.com
 */
 
 /*

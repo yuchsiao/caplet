@@ -75,6 +75,7 @@ If problems happen at `caplet_geo`, run `qmake` then `make`.
 Quickstarts
 -----------
 
+###`caplet`
 **0. `caplet`:** consists of three parts: `caplet_gds2geo`, `caplet_geo`, and `caplet_solver`, each of which, respectively, processes layout `.gds` files into geometry `.geo` files, generates basis function files `.qui` or `.caplet`, and extracts and prints performance and capacitance matrices on screen. Each program takes the output file of the previous stage as input.
 
 **1. `caplet_gds2geo`:** transforms binary GDSii layout files into ascii geometry definitions, including squares and polygons. The generated geometry files end with `.geo` extension. This program needs an additional file to specify the elevation of each metal layer and connection relationship between layers and vias. The usage is as the following:

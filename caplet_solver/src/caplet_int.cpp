@@ -2,7 +2,7 @@
 Created : Jul 31, 2010
 Modified: Feb 14, 2013
 Author  : Yu-Chung Hsiao
-Email   : yuchsiao@mit.edu
+Email   : project.caplet@gmail.com
 */
 
 /*
