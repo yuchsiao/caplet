@@ -167,7 +167,7 @@ Tested Environments
 * python: 2.7.4, 2.6.5 
 * Qt: 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
 * OpenMPI: 1.4.5, 1.4.1
-* 
+* python-gdsii: 0.2.1
 
 
 Release Notes
