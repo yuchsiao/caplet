@@ -26,10 +26,6 @@ Screenshots
 -----------
 ![GUI](http://www.mit.edu/~yuchsiao/caplet/img/gui_piecewise_constant_basis_function.png "GUI and Piecewise constant basis functions")
 
-Version
--------
-1.0.2
-
 
 License
 -------
@@ -177,8 +173,11 @@ Tested Environments
 Release Notes
 -------------
 
+**1.0.3** - 2013-07-23
+
 * Fix: Ensured output of caplet_gds2geo.py in integers so that caplet_geo reads correctly.
 
+_________
 **1.0.2** - 2013-07-20
 
 * New: Hosted a repo on GitHub.
