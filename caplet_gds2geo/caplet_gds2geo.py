@@ -90,26 +90,28 @@ def main():
            
     # write sorted structures into a geo file
     geo_filename = args.filename.split('.')[0]+'.geo'
+    print("OUTPUTFILE: %s" % geo_filename)
+
     with open(geo_filename, 'w') as output:
         # output metal def
         n_metal = len(metal_index)
-        output.write( str(n_metal)+'\n' )
+        output.write( str( int(n_metal) ) + '\n' )
 
         for i in range(n_metal):
             output.write( str(i) + ', ' 
-                          + str(metal[ metal_index[i] ][LAYER.BOTTOM]) + ', '
-                          + str(metal[ metal_index[i] ][LAYER.TOP]) + '\n' )
+                          + str( int(metal[ metal_index[i] ][LAYER.BOTTOM]) ) + ', '
+                          + str( int(metal[ metal_index[i] ][LAYER.TOP]) )    + '\n' )
 
         # output via def
         n_via = len(via_index)
-        output.write( str(n_via) + '\n' )
+        output.write( str( int(n_via) ) + '\n' )
     
         for i in range(n_via):
             output.write( str(i+n_metal) + ', '
-                          + str(via[ via_index[i] ][LAYER.BOTTOM]) + ', '
-                          + str(via[ via_index[i] ][LAYER.TOP]) + ', '
-                          + str(metal[ via_connect[ via_index[i] ][0] ][LAYER.NAME]) + ', '
-                          + str(metal[ via_connect[ via_index[i] ][1] ][LAYER.NAME]) + '\n' )
+                          + str( int(via[ via_index[i] ][LAYER.BOTTOM]) ) + ', '
+                          + str( int(via[ via_index[i] ][LAYER.TOP]) )    + ', '
+                          + str( int(metal[ via_connect[ via_index[i] ][0] ][LAYER.NAME]) ) + ', '
+                          + str( int(metal[ via_connect[ via_index[i] ][1] ][LAYER.NAME]) ) + '\n' )
 
 
         # output metal and struc
@@ -124,10 +126,10 @@ def main():
                     poly = each_struc[i].popleft()
                     output.write( str( len(poly) ) + '\n' )
                     for pnt in poly:
-                        output.write( str( pnt[0] ) + ', ' + str( pnt[1] ) + '\n' )
+                        output.write( str( int(pnt[0]) ) + ', ' + str( int(pnt[1]) ) + '\n' )
 
         # complete
-        print("Done!")
+        print("Success.")
         
 
 def boundary2point(boundary):

@@ -171,11 +171,15 @@ Tested Environments
 * python: 2.7.4, 2.6.5 
 * Qt: 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
 * OpenMPI: 1.4.5, 1.4.1
+* 
 
 
 Release Notes
 -------------
-**1.0.2** - 2013-07-16
+
+* Fix: Ensured output of caplet_gds2geo.py in integers so that caplet_geo reads correctly.
+
+**1.0.2** - 2013-07-20
 
 * New: Hosted a repo on GitHub.
 * New: Prepared this README.md file.
@@ -188,6 +192,7 @@ _________
 
 * Fix: Improved installation by utilizing qmake for caplet_geo.
 * Fix: Updated Makefile in caplet_solver that originally generates linking warnings.
+* Fix: Updated caplet_gds2geo/install.sh so that gdsii library can be downloaded through proxies or firewalls.
 
 __________
 [**1.0.0** - 2013-02-15](http://sourceforge.net/projects/caplet/files/?source=navbar)
