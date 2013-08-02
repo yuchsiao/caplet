@@ -1,4 +1,4 @@
-capletMPI
-capletOpenMP
+capletMPI*
+capletOpenMP*
 !.gitignore
 *~

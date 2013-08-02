@@ -462,10 +462,12 @@ public:
 
 //**
 //* DirRectangleGLList
+//* - Dir: 0 to 5 for rect outer normal dir -x, +x, -y, +y, -z, +z
 typedef std::vector<RectangleGLList> DirRectangleGLList;
 
 //**
 //* LayeredDirRectangleGLList
+//* - Layer index from each metal to each via in order, nLayer == nMetal + nVia
 typedef std::vector<DirRectangleGLList> LayeredDirRectangleGLList;
 
 //**

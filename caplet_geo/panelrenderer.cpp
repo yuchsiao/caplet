@@ -1,6 +1,5 @@
 /*
 CREATED : Jan 31, 2013
-MODIFIED: Feb 15, 2013
 AUTHOR  : Yu-Chung Hsiao
 EMAIL   : project.caplet@gmail.com
 
@@ -599,7 +598,7 @@ void PanelRenderer::mousePressEvent(QMouseEvent *event)
 	int xCenter = center.x();
 	int yCenter = center.y();
 	int maxRadius2 = (width()>height())? height()/2 : width()/2;
-	int lastRadius2 = static_cast<int>(std::sqrt((lx-xCenter)*(lx-xCenter) + (ly-yCenter)*(ly-yCenter)));
+    int lastRadius2 = static_cast<int>(std::sqrt((lx-xCenter)*(lx-xCenter) + (ly-yCenter)*(ly-yCenter)));
 
 	mouseAxis = ( lastRadius2 > maxRadius2 * 0.9 ) ? AXIS_Z : AXIS_XY;
 

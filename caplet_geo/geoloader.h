@@ -1,6 +1,5 @@
 /*
 CREATED : Jan 31, 2013
-MODIFIED: Feb 14, 2013
 AUTHOR  : Yu-Chung Hsiao
 EMAIL   : project.caplet@gmail.com
 
@@ -72,6 +71,7 @@ public:
     std::vector<float> compareDiagonal(const ExtractionInfo& ref) const throw (std::length_error);
 };
 
+typedef std::list<ExtractionInfo> ExtractionInfoList;
 
 class FileNotFoundError : public std::runtime_error{
 public:
@@ -126,7 +126,7 @@ public:
     const ExtractionInfo& getLastResult() const;
     const ExtractionInfo& getReferenceResult() const;
     const ExtractionInfo& storeLastAsReference();
-    std::list<ExtractionInfo> compareAllAgainstReference() const;
+    ExtractionInfoList compareAllAgainstReference() const;
     void clearResult();
 private:
     bool                    isLoaded;
@@ -154,23 +154,26 @@ private:
 
     ConductorList &generateConductorList(ConductorList &conductorList, bool flagDecomposed);
 
-    std::list<ExtractionInfo> extractionInfoList;
+    ExtractionInfoList extractionInfoList;
     ExtractionInfo referenceResult;
 
 };
-
-typedef std::list< std::vector< std::list< std::pair<int,int> > > > Adjacency;
+typedef std::list< std::pair<int,int> > AdjacencyList;
+typedef std::vector< AdjacencyList >    DirAdjacencyList;
+typedef std::list< DirAdjacencyList >   DirAdjacencyListOfRectangleList;
 
 void poly2rect(PolygonList &polygonList, RectangleList &rectList);
 void generateConnectedRects( RectangleList &rectList, ConnectedRectangleList &rectListList );
-void computeAdjacency(const RectangleList &rectList, Adjacency &adjacency, Adjacency &compAdjacency);
+void computeAdjacency(const RectangleList               &rectList,
+                      DirAdjacencyListOfRectangleList   &adjacency,
+                      DirAdjacencyListOfRectangleList   &compAdjacency);
 
-void generate3dRects(const RectangleList    &rect2dList,
-                     const Adjacency        &compAdjacency,
-                     const int              elevationBottom,
-                     const int              elevationTop,
-                     const int              layerIndex,
-                     Conductor              &cond);
+void generate3dRects(const RectangleList                    &rect2dList,
+                     const DirAdjacencyListOfRectangleList  &compAdjacency,
+                     const int                              elevationBottom,
+                     const int                              elevationTop,
+                     const int                              layerIndex,
+                     Conductor                              &cond);
 
 void discretizeDisjointSurface(ConductorFPList &cond, const float suggestedPanelSize);
 void instantiateBasisFunction (ConductorFPList &cond, const float archLength);

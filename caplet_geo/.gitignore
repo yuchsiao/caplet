@@ -2,6 +2,7 @@ Makefile
 *~
 caplet_geo_cli
 caplet_geo
+caplet_geo.pro.*
 ui_*
 *.o
 moc_*

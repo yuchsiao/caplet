@@ -1037,12 +1037,12 @@ RectangleGL RectangleGL::intersectProjection(const RectangleGL &rect) const
         result.z1 = this->z1;
         result.z2 = this->z2;
     }
-    if (*this == result){
+    if (*this == result){ // marked as empty for RectangleGL.isEmpty()
         result.xn=0;
         result.yn=0;
         result.zn=0;
     }
-    result.shapeShift = 1;
+    result.shapeShift = 1; // marked as inserted rect
     return result;
 }
 
@@ -1371,28 +1371,30 @@ RectangleGLList::IteratorList RectangleGLList::insertProjectedOverlappingRectang
 {
     RectangleGLList::IteratorList itList;
 
-    RectangleGLList::iterator dummyEnd = this->insert(this->end(), RectangleGL());
-    for ( RectangleGLList::iterator eachRect = this->begin();
-          eachRect != dummyEnd; ++eachRect){
+    RectangleGLList::iterator dummyEnd = this->insert(this->end(), RectangleGL()); // anchor for inserting projected rect
+    for ( RectangleGLList::iterator eachRectIt = this->begin();
+          eachRectIt != dummyEnd && eachRectIt->shapeShift==0; ++eachRectIt){
+
+        RectangleGL &eachRect = *eachRectIt;
 
         if ( !(//* x-dir normal
-             ( rect.xn > 0 && eachRect->xn < 0 && rect.x1 < eachRect->x1 && eachRect->x1 < rect.x1+distance ) ||
-             ( rect.xn < 0 && eachRect->xn > 0 && eachRect->x1 < rect.x1 && rect.x1 < eachRect->x1+distance ) ||
+             ( rect.xn > 0 && eachRect.xn < 0 && rect.x1 < eachRect.x1 && eachRect.x1 < rect.x1+distance ) ||
+             ( rect.xn < 0 && eachRect.xn > 0 && eachRect.x1 < rect.x1 && rect.x1 < eachRect.x1+distance ) ||
              //* y-dir normal
-             ( rect.yn > 0 && eachRect->yn < 0 && rect.y1 < eachRect->y1 && eachRect->y1 < rect.y1+distance ) ||
-             ( rect.yn < 0 && eachRect->yn > 0 && eachRect->y1 < rect.y1 && rect.y1 < eachRect->y1+distance ) ||
+             ( rect.yn > 0 && eachRect.yn < 0 && rect.y1 < eachRect.y1 && eachRect.y1 < rect.y1+distance ) ||
+             ( rect.yn < 0 && eachRect.yn > 0 && eachRect.y1 < rect.y1 && rect.y1 < eachRect.y1+distance ) ||
              //* z-dir normal
-             ( rect.zn > 0 && eachRect->zn < 0 && rect.z1 < eachRect->z1 && eachRect->z1 < rect.z1+distance ) ||
-             ( rect.zn < 0 && eachRect->zn > 0 && eachRect->z1 < rect.z1 && rect.z1 < eachRect->z1+distance )
+             ( rect.zn > 0 && eachRect.zn < 0 && rect.z1 < eachRect.z1 && eachRect.z1 < rect.z1+distance ) ||
+             ( rect.zn < 0 && eachRect.zn > 0 && eachRect.z1 < rect.z1 && rect.z1 < eachRect.z1+distance )
              ) ) {
             continue;
         }
 
         //* find and insert the projection of rect onto this list
-        if (eachRect->isOverlappingProjection(rect)==true){
-            RectangleGLList::iterator it = this->insert( this->end(), eachRect->intersectProjection(rect) );
+        if (eachRect.isOverlappingProjection(rect)==true){
+            RectangleGLList::iterator it = this->insert( this->end(), eachRect.intersectProjection(rect) );
             if (it->isEmpty()==true){
-                //* if the inserted project is *eachRect itself, delete it
+                //* if the inserted projection is *eachRect itself, delete it
                 this->erase(it);
             }
             else{

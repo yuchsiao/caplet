@@ -1,6 +1,5 @@
 /*
 CREATED : Jan 31, 2013
-MODIFIED: Feb 15, 2013
 AUTHOR  : Yu-Chung Hsiao
 EMAIL   : project.caplet@gmail.com
 

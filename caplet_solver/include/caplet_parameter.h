@@ -1,6 +1,5 @@
 /*
 Created : Jan 29, 2013
-Modified: Feb 14, 2013
 Author  : Yu-Chung Hsiao
 Email   : project.caplet@gmail.com
 */
@@ -52,7 +51,7 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 
 //* Openmp num of threads
 #ifdef CAPLET_OPENMP
-    #define CAPLET_OPENMP_NUM_THREADS 2
+    #define CAPLET_OPENMP_NUM_THREADS 4
 #endif
 
 namespace caplet{

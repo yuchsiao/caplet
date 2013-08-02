@@ -36,6 +36,7 @@ extern "C"{
 			const double* 	dy, 	// []vector y
 			const int* 		incy	// index increment of each access of y
 	);
+
 	// single precision dot product
 	float sdot_(
 			const int* 		n, 		// dimension

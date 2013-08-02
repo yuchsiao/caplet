@@ -1,6 +1,5 @@
 /*
 CREATED : Jan 31, 2013
-MODIFIED: Feb 15, 2013
 AUTHOR  : Yu-Chung Hsiao
 EMAIL   : project.caplet@gmail.com
 
@@ -100,7 +99,6 @@ void GeoLoader::loadGeo(const string &geoFile) throw (FileNotFoundError, Geometr
             }
         }
     }
-
     //* poly to rect for metal
     LayeredRectangleList metalLayeredRectangleList(nMetal);
     for ( int i=0; i<nMetal; ++i ){
@@ -138,8 +136,8 @@ void GeoLoader::loadGeo(const string &geoFile) throw (FileNotFoundError, Geometr
             //* combine x-y plane rects if adjacent ones can form a single rect
             eachListIt->merge();
             //* compute adjacency for each 2D rect
-            Adjacency adjacency;
-            Adjacency compAdjacency;
+            DirAdjacencyListOfRectangleList adjacency;
+            DirAdjacencyListOfRectangleList compAdjacency;
             computeAdjacency(*eachListIt, adjacency, compAdjacency);
             //* construct 3D rects
             metalConductorList.push_back(Conductor(nMetal, nVia));
@@ -152,6 +150,7 @@ void GeoLoader::loadGeo(const string &geoFile) throw (FileNotFoundError, Geometr
             eachListIt->clear();
         }
     }
+
 
     //* UNCOMMENT to generate matlab structure output
     //printConductorListMatlab(conductorList);
@@ -187,6 +186,7 @@ const ConductorFPList &GeoLoader::getPWCBasisFunction() const
 {
     return pwcConductorFPList;
 }
+
 
 const ConductorFPList &GeoLoader::getInstantiableBasisFunction(const float unit, const float archLength)
 {
@@ -1266,7 +1266,10 @@ void poly2rect(PolygonList &polyList, RectangleList &rectList){
 
         //* if the poly contains only four points
         if ( poly.size() == 4 ){
-            rectList.push_back( Rectangle(poly) );
+            Rectangle rect(poly);
+            if (rect.area()!=0){
+                rectList.push_back( Rectangle(poly) );
+            }
             continue;
         }
 
@@ -1408,15 +1411,16 @@ void generateConnectedRects( RectangleList &rectList, ConnectedRectangleList &re
 //**
 //* computeAdjacency
 //* - CURRENTLY DOES NOT SUPPORT SUBLAYERS
+//* - Assume adjacent segments are disjoint (not work properly if not)
 //* - Input a list of x-y plane rectangles
 //* - Output the adjacency between rectangles and the complement
 template<class T>
 bool lessPairFirst(const pair<T,T> p1, const pair<T,T> p2){
     return p1.first < p2.first;
 }
-void computeAdjacency(const RectangleList &rectList,
-                      Adjacency           &adjacency,
-                      Adjacency           &compAdjacency){
+void computeAdjacency(const RectangleList               &rectList,
+                      DirAdjacencyListOfRectangleList   &adjacency,
+                      DirAdjacencyListOfRectangleList   &compAdjacency){
 
 
     enum ADJ {LEFT, RIGHT, BACK, FRONT, BOTTOM, TOP};
@@ -1428,14 +1432,15 @@ void computeAdjacency(const RectangleList &rectList,
         adjacency.push_back(vector< list< pair<int,int> > >(4, list< pair<int,int> >()));
     }
 
-    RectangleList::const_iterator rectIit;
-    Adjacency::iterator           adjIit;
+    RectangleList::const_iterator               rectIit;
+    RectangleList::const_iterator               rectListEndMinusOne = --rectList.end();
+    DirAdjacencyListOfRectangleList::iterator   adjIit;
     for ( rectIit = rectList.begin(), adjIit = adjacency.begin();
-          rectIit != --rectList.end(); ++rectIit, ++adjIit )
+          rectIit != rectListEndMinusOne; ++rectIit, ++adjIit )
     {
 
-        RectangleList::const_iterator rectJit = rectIit;
-        Adjacency::iterator           adjJit = adjIit;
+        RectangleList::const_iterator               rectJit = rectIit;
+        DirAdjacencyListOfRectangleList::iterator   adjJit = adjIit;
         for ( ++rectJit, ++adjJit;
               rectJit != rectList.end(); ++rectJit, ++adjJit )
         {
@@ -1443,12 +1448,12 @@ void computeAdjacency(const RectangleList &rectList,
             if ( (rectIit->y1 <= rectJit->y1 && rectJit->y1 <  rectIit->y2) ||
                  (rectIit->y1 <  rectJit->y2 && rectJit->y2 <= rectIit->y2) )
             {
-                //* connected from right
+                //* connected from I's right
                 if ( rectIit->x2 == rectJit->x1 ){
                     (*adjIit)[RIGHT].push_back(make_pair(rectJit->y1, rectJit->y2));
                     (*adjJit)[LEFT ].push_back(make_pair(rectIit->y1, rectIit->y2));
                 }
-                //* connected from left
+                //* connected from I's left
                 else if ( rectIit->x1 == rectJit->x2 ){
                     (*adjIit)[LEFT ].push_back(make_pair(rectJit->y1, rectJit->y2));
                     (*adjJit)[RIGHT].push_back(make_pair(rectIit->y1, rectIit->y2));
@@ -1458,12 +1463,12 @@ void computeAdjacency(const RectangleList &rectList,
             if ( (rectIit->x1 <= rectJit->x1 && rectJit->x1 <  rectIit->x2) ||
                  (rectIit->x1 <  rectJit->x2 && rectJit->x2 <= rectIit->x2) )
             {
-                //* connected from above
+                //* connected from I's below
                 if ( rectIit->y2 == rectJit->y1 ){
                     (*adjIit)[FRONT].push_back(make_pair(rectJit->x1, rectJit->x2));
                     (*adjJit)[BACK ].push_back(make_pair(rectIit->x1, rectIit->x2));
                 }
-                //* connected from below
+                //* connected from I's above
                 else if ( rectIit->y1 == rectJit->y2 ){
                     (*adjIit)[BACK ].push_back(make_pair(rectJit->x1, rectJit->x2));
                     (*adjJit)[FRONT].push_back(make_pair(rectIit->x1, rectIit->x2));
@@ -1472,9 +1477,12 @@ void computeAdjacency(const RectangleList &rectList,
         }
     }
 
+
     //* sort and trim adjacent rect ranges
+    const int nDir = 4; // LEFT, RIGHT, FRONT, BACK four directions
     for ( adjIit = adjacency.begin(), rectIit = rectList.begin(); adjIit!=adjacency.end(); ++adjIit, ++rectIit ){
-        compAdjacency.push_back( vector< list< pair<int,int> > >(4, list< pair<int,int> >()));
+
+        compAdjacency.push_back( DirAdjacencyList(nDir, AdjacencyList()));
 
         (*adjIit)[LEFT ].sort( lessPairFirst<int>);
         (*adjIit)[RIGHT].sort( lessPairFirst<int>);
@@ -1482,7 +1490,7 @@ void computeAdjacency(const RectangleList &rectList,
         (*adjIit)[BACK ].sort( lessPairFirst<int>);
 
         //* trim protrusive adjacent range and generate compAdjacency
-        for ( int i=0; i<4; ++i ){
+        for ( int i=0; i<nDir; ++i ){
             int upper = 0;
             int lower = 0;
 
@@ -1523,6 +1531,7 @@ void computeAdjacency(const RectangleList &rectList,
             }
         }
     }
+
 }
 
 
@@ -1530,7 +1539,7 @@ void computeAdjacency(const RectangleList &rectList,
 //**
 //* generate3dRects
 void generate3dRects(const RectangleList    &rect2dList,
-                     const Adjacency        &compAdjacency,
+                     const DirAdjacencyListOfRectangleList        &compAdjacency,
                      const int              elevationBottom,
                      const int              elevationTop,
                      const int              layerIndex,
