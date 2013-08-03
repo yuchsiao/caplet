@@ -33,13 +33,13 @@ mpi: capletMPI
 openmp: capletOpenMP 
 
 capletMPI: $(CAPLET_MPI_OBJ)
-	$(MPICXX) $(LIB) $(FLAG) $(DEF_MPI) -o $(BIN)/$@ $^ 
+	$(MPICXX) $(FLAG) $(DEF_MPI) -o $(BIN)/$@ $^ $(LIB)
 
 $(OBJ_MPI)/%.o: $(SRC)/%.cpp
 	$(MPICXX) $(FLAG) $(DEF_MPI) -c $< -o $@
 
 capletOpenMP: $(CAPLET_OPENMP_OBJ)
-	$(MPICXX) $(LIB) $(FLAG) $(DEF_OPENMP) -o $(BIN)/$@ $^
+	$(MPICXX) $(FLAG) $(DEF_OPENMP) -o $(BIN)/$@ $^ $(LIB) 
 
 $(OBJ_OPENMP)/%.o: $(SRC)/%.cpp
 	$(MPICXX) $(FLAG) $(DEF_OPENMP) -c $< -o $@
