@@ -1018,7 +1018,7 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
 
         Polygon::iterator eachPointIt;
         Polygon::iterator closestPointIt;
-
+        //* 1. Find the closest point
         for (eachPointIt=poly.begin(); eachPointIt!=poly.end(); ++eachPointIt){
             Polygon::iterator nextPointIt = nextIterator(poly, eachPointIt);
 
@@ -1070,8 +1070,9 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
         Polygon::iterator insertedPointIt;
         if ( (insertedPoint == (*nextClosestPointIt) &&
               theOtherPointIt == prevIterator(poly, extensionPointIt))
-              ||(insertedPoint == (*closestPointIt) &&
-                 theOtherPointIt == nextIterator(poly, extensionPointIt)) )
+              ||
+             (insertedPoint == (*closestPointIt) &&
+              theOtherPointIt == nextIterator(poly, extensionPointIt)) )
         {
             //* the inserted point coincides the far end of the closest edge
             //* the next edge of the closest edge will be collinear with extensionEdge
@@ -1087,9 +1088,10 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
 
         }
         else if ( (insertedPoint == (*closestPointIt) &&
-                    theOtherPointIt == nextIterator(poly, extensionPointIt))
-                   ||(insertedPoint == (*nextClosestPointIt) &&
-                      theOtherPointIt == prevIterator(poly, extensionPointIt)) )
+                   theOtherPointIt == prevIterator(poly, extensionPointIt))
+                   ||
+                  (insertedPoint == (*nextClosestPointIt) &&
+                   theOtherPointIt == nextIterator(poly, extensionPointIt)) )
         {
             //* the inserted point coincides the near end of the closest edge
             //* simply cut the exterior L-shaped polygon
@@ -1107,9 +1109,10 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
             insertedPoint.dir = (*closestPointIt).dir;
             poly.insert(nextClosestPointIt, insertedPoint);
             insertedPointIt = nextClosestPointIt;
-            --insertedPointIt;
+//            --insertedPointIt;
+            insertedPointIt = prevIterator(poly, insertedPointIt);
         }
-
+        //* 3. Cut by the newly inserted extension edge
         Polygon cut;
         if ( theOtherPointIt == prevIterator(poly, extensionPointIt) ){
             //* forward cut from extensionPointIt to insertedPointIt
@@ -1124,12 +1127,12 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
             if ( includeInsertedPointInCut ){
                 cut.push_back(*eachPointIt);
                 Polygon::reverse_iterator prevIt = ++cut.rbegin();
-                Polygon::reverse_iterator prevPrevIt = prevIt; ++prevPrevIt;
+                Polygon::reverse_iterator prevPrevIt = prevIt; ++prevPrevIt; // cut.size()>=4. OK without boundary check
                 updateEdgeDirLen( *prevIt, cut.back(), cut.front());
                 updateEdgeDirLen(*prevPrevIt, *prevIt, cut.back());
             }
             if ( removeInsertedPointFromPoly ){
-                ++insertedPointIt;
+                insertedPointIt = nextIterator(poly, insertedPointIt);
                 poly.erase(eachPointIt++);
                 if ( eachPointIt == poly.end() ){
                     eachPointIt = poly.begin();
@@ -1147,8 +1150,10 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
                 cut.push_back(*eachPointIt);
             }
             if ( removeInsertedPointFromPoly ){
-                --insertedPointIt;
+                insertedPointIt = prevIterator(poly, insertedPointIt);
                 poly.erase(eachPointIt++);
+//                eachPointIt = poly.erase(eachPointIt);
+//                eachPointIt = (eachPointIt==poly.end()) ? poly.begin() : eachPointIt;
                 if ( eachPointIt == poly.end() ){
                     eachPointIt = poly.begin();
                 }
@@ -1157,8 +1162,9 @@ PolygonList extend(Polygon& poly, Polygon::iterator extensionPointIt,
                 eachPointIt = nextIterator(poly, eachPointIt);
             }
             Polygon::iterator tempIt = extensionPointIt;
+            tempIt = nextIterator(poly, tempIt);
             Polygon::iterator nextIt = nextIterator(poly, extensionPointIt);
-            for ( ++tempIt ; eachPointIt != tempIt; )
+            for ( ; eachPointIt != tempIt; )
             {
                 cut.push_back(*eachPointIt);
                 poly.erase(eachPointIt++);
@@ -1213,7 +1219,7 @@ PolygonList cut(Polygon &poly, Polygon::iterator cutPointIt){
     printPolygon(poly);
     printPolygonList(cutSet);
     #endif
-    cutPointIt = prevIterator(poly, nextCutPointIt);
+    cutPointIt = prevIterator(poly, nextCutPointIt); // recompute cutPointIt
     if ( !isConvex(-pos, (*nextCutPointIt).dir ) ){
         //* concave. need extension
         Dir extDir = getExtDir(*cutPointIt, *nextCutPointIt);
@@ -1235,10 +1241,13 @@ void poly2rect(PolygonList &polyList, RectangleList &rectList){
 
     Polygon poly;
 
+    //* Compute lens and dirs (inward normal) for each edge for each polygon
+    //* Each edge is represented by a point.
+    //* The other point of an edge is the next point iterator inferred by list data structure.
     for ( PolygonList::iterator eachPolygon = polyList.begin();
          eachPolygon != polyList.end(); ++eachPolygon )
     {
-        //* get the "first" iterator of minimum value
+        //* Find the leftmost edge to get an idea of inner direction
         Polygon::iterator leftMostEdge = min_element( (*eachPolygon).begin(), (*eachPolygon).end(), xLess );
         if ( leftMostEdge == (*eachPolygon).begin() && (*leftMostEdge).x==(*eachPolygon).back().x ){
             //* fix the case when the edge connects the first and the last points
@@ -1256,6 +1265,7 @@ void poly2rect(PolygonList &polyList, RectangleList &rectList){
         {
             updateEdgeDirLen(*prevPointIt, *thisPointIt, *nextPointIt);
         }
+        updateEdgeDirLen(*prevPointIt, *thisPointIt, *nextPointIt); // complete a loop of polygon edge
 
     }
 
