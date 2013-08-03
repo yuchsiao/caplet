@@ -34,27 +34,27 @@ GNU Lesser General Public License Version 3 (GPLv3)
 Caplet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 
-Prerequisites
--------------
+Requirements
+------------
 
 **General** 
 
-* g++ 4.4 or higher
+- g++ 4.4 or higher
 
 **For `caplet_gds2geo`**
 
-* Python 2.6 or higher
-* [GDSII for Python](http://gdspy.sourceforge.net/): automatically downloaded with `install.sh`
+- Python 2.6 or higher
+- [GDSII for Python](http://gdspy.sourceforge.net/): automatically downloaded with `install.sh`
 
 **For `caplet_geo`**
 
-* Qt 4.4 or higher
-* OpenGL
+- Qt 4.4 or higher
+- OpenGL
 
 **For `caplet_solver`**
 
-* openmpi, openmp
-* gfortran, lapack, blas
+- openmpi, openmp
+- gfortran, lapack, blas
 
 
 Installation
@@ -65,7 +65,18 @@ To install, execute `install.sh`. Make sure `qmake` is in your system path.
 To uninstall, execute `uninstall.sh`.
 
 If you encounter any problem, go to the individual folder and run `make`.
-If problems happen at `caplet_geo`, run `qmake` then `make`.
+If problems happen at `caplet_geo`, run `qmake` first and then `make`.
+
+
+Tested Environments
+-------------------
+
+* platform: lmde-64bit (linux mint debian edition), mint15-64bit (ubuntu13.04), ubuntu10.04-64bit
+* g++: 4.7.3, 4.4.3
+* python: 2.7.4, 2.6.5 
+* Qt: 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
+* OpenMPI: 1.4.5, 1.4.1
+* python-gdsii: 0.2.1
 
 
 Quickstarts
@@ -159,23 +170,122 @@ bin/capletMPI example/cap_inverter_200nm.qui
 ```
 
 
-Tested Environments
--------------------
+FORMAT
+------
 
-* platform: lmde-64bit (linux mint debian edition), mint15-64bit (ubuntu13.04), ubuntu10.04-64bit
-* g++: 4.7.3, 4.4.3
-* python: 2.7.4, 2.6.5 
-* Qt: 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
-* OpenMPI: 1.4.5, 1.4.1
-* python-gdsii: 0.2.1
+####`.geo`
+
+Geometry files `.geo` define metal layer elevations (z-direction), via elevations and which metal layers are connected from above and below, and the polygon descriptions for each layer. Currently, only boundary and path types of GDS2 are processed into polygons. All other types of GDS2 are ignored. 
+
+The format is as the following
+
+
+    #metal_layers
+    layer_index, z_min, z_max 
+    .
+    .
+    #vias
+    layer_index, z_min, z_max, bottom_layer_index, top_layer_index
+    layer_index
+    {#polygons_in_a_layer
+    [#vertices_in_a_polygon
+    vertex_1
+    vertex_2
+    .
+    .
+    vertex_last]}
+    .
+    .
+    
+
+It is worth noting that metal layers and vias are indexed together, staring from 0. The square bracket part [] describes x- and y-coordinates of vertices for a polygon. There are total `#polygons_in_a_layer` such square brackets for a layer. Once all polygons in a single layer are described, we move to the next layer description enclosed by curly brackets {}. The file ends when all layers, including metal layers and vias, and all polygons in each layer are listed. The brackets are not written in output files explicitly. We put them here only for explanation purposes.
+
+All numbers are integers with an implicit unit nm. Check if your GDS2 files are defined in different units.
+
+Examples can be found under folder `caplet_geo/example`.
+
+
+
+####`.caplet`
+
+Instantiable basis function files `.caplet` describe fundamental shapes that are used to constitute instantiable basis functions. The format is as the following
+
+    #conductors
+    #shapes_for_conductor_1 #shapes_for_conductor_2 ...
+    total_number_of_shapes
+    [ST Inc XL XU YL YU ZL ZU Dir SDir Decay Ignore]
+    .
+    .
+
+The square bracket records information for one shape. The file terminates when all shapes of `total_number_of_shapes` are listed. Each element is explained below:
+
+`ST`: Shape Type is either 'A' for arch or 'F' for flat.
+
+`Inc`: Increment value is either '1' or '0'. A shape with increment '0' belongs to the same basis function of the closest previous shape with '1'.
+
+`XL` to `ZU`: Lower and Upper x-, y-, and z-coordinates.
+
+`Dir`: Surface normal direction.
+
+`SDir`: Shape varying direction.
+
+`Decay`: Positive sign for shape decaying toward the positive direction, and negative sign for decaying toward the negative direction.
+
+`Ignore`: Reserved and currently not used in `caplet_solver`.
+
+Examples can be found under folder `caplet_solver/example`.
+
+
+
+####`.qui`
+
+Files are originally used for FASTCAP. `caplet_geo` can also load and visualize them in 3D. The format is as the following:
+
+    0
+    shape conductor_label x1 y1 z1 x2 y2 z2 ...
+    .
+    .
+
+The first line led by 0 is always ignored. From the second line to the last, each line defines a flat shape or a piecewise constant basis function. 
+
+`shape`: `Q` for quadrilateral and `T` for triangular shapes.
+`conductor_label`: arbitrary single word label. The common choice is integer indices.
+`xn yn zn`: x-, y-, and z-coordinates for a single vertex. For `Q`, four such triplets follow `conductor_label`. For `T`, there are three triplets instead. The vertices should be recorded either clockwise or counter-clockwise.
+In Manhattan geometries, we only use `Q` for piecewise constant basis functions.
+
+More information can be found in [FASTCAP](http://www.rle.mit.edu/cpg/research_codes.htm) manual (`ug.tex` under `doc`).
+
+
+Limitation
+----------
+
+**For `caplet_gds2geo`**
+
+- GDS files are assumed flattened.
+
+**For `caplet_geo`**
+
+- Metal layers and vias are disjoint in the vertical direction.
+- Sublayers are not taken into account.
+
+**For `caplet_solver`**
+
+- Relative dielectric constant is fixed to be 1.
+- Dielectric material is assumed to be uniform.
 
 
 Release Notes
 -------------
 
+**1.0.4** - 2013-08-03
+
+* Fix: Updated Makefile to be compatible with gcc that has linker flag '--as-needed' by default
+* Fix: Fixed bugs in `extend()` and `poly2rect()` of `caplet_geo/geoloader.cpp` that cause segmentation fault for certain cases.
+
+_________
 **1.0.3** - 2013-07-23
 
-* Fix: Ensured output of caplet_gds2geo.py in integers so that caplet_geo reads correctly.
+* Fix: Ensured output of `caplet_gds2geo.py` in integers so that `caplet_geo` reads correctly.
 
 _________
 **1.0.2** - 2013-07-20
@@ -191,7 +301,7 @@ _________
 
 * Fix: Improved installation by utilizing qmake for caplet_geo.
 * Fix: Updated Makefile in caplet_solver that originally generates linking warnings.
-* Fix: Updated caplet_gds2geo/install.sh so that gdsii library can be downloaded through proxies or firewalls.
+* Fix: Updated caplet_gds2geo/install.sh so that gdsii library can be downloaded through proxies or behind firewalls.
 
 __________
 [**1.0.0** - 2013-02-15](http://sourceforge.net/projects/caplet/files/?source=navbar)
@@ -207,7 +317,7 @@ __________
 * New: Debut
 
 
+
 [Caplet]: http://www.rle.mit.edu/cpg/codes/caplet/
 [FASTCAP]: http://www.rle.mit.edu/cpg/research_codes.htm
-
 
