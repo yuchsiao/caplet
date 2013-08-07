@@ -37,21 +37,21 @@ Caplet is distributed in the hope that it will be useful, but WITHOUT ANY WARRAN
 Requirements
 ------------
 
-**General** 
+####General
 
-- g++ 4.4 or higher
+- gcc 4.4 or higher
 
-**For `caplet_gds2geo`**
+####`caplet_gds2geo`
 
 - Python 2.6 or higher
 - [GDSII for Python](http://gdspy.sourceforge.net/): automatically downloaded with `install.sh`
 
-**For `caplet_geo`**
+####`caplet_geo`
 
 - Qt 4.4 or higher
 - OpenGL
 
-**For `caplet_solver`**
+####`caplet_solver`
 
 - openmpi, openmp
 - gfortran, lapack, blas
@@ -71,12 +71,12 @@ If problems happen at `caplet_geo`, run `qmake` first and then `make`.
 Tested Environments
 -------------------
 
-* platform: lmde-64bit (linux mint debian edition), mint15-64bit (ubuntu13.04), ubuntu10.04-64bit
-* g++: 4.7.3, 4.4.3
-* python: 2.7.4, 2.6.5 
-* Qt: 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
-* OpenMPI: 1.4.5, 1.4.1
-* python-gdsii: 0.2.1
+- **platform:** lmde-64bit (linux mint debian edition), mint15-64bit (ubuntu13.04), ubuntu12.04-64bit, ubuntu10.04-64bit
+- **g++:** 4.7.3, 4.4.3
+- **python:** 2.7.4, 2.6.5 
+- **Qt:** 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
+- **OpenMPI:** 1.4.5, 1.4.1
+- **python-gdsii:** 0.2.1
 
 
 Quickstarts
@@ -259,16 +259,16 @@ More information can be found in [FASTCAP](http://www.rle.mit.edu/cpg/research_c
 Limitation
 ----------
 
-**For `caplet_gds2geo`**
+####`caplet_gds2geo`
 
 - GDS files are assumed flattened.
 
-**For `caplet_geo`**
+####`caplet_geo`
 
 - Metal layers and vias are disjoint in the vertical direction.
 - Sublayers are not taken into account.
 
-**For `caplet_solver`**
+####`caplet_solver`
 
 - Relative dielectric constant is fixed to be 1.
 - Dielectric material is assumed to be uniform.
@@ -277,9 +277,15 @@ Limitation
 Release Notes
 -------------
 
+**1.0.5** - 2013-08-07
+
+* New: Added default flag ROBUST_INTEGRAL_CHECK and modified default value of zero to 1e-12 in `caplet_solver/include/caplet_parameter.h` to improve integral quality.
+* Fix: Improved integral quality to avoid sometimes nan or inf values.
+
+_________
 **1.0.4** - 2013-08-03
 
-* Fix: Updated Makefile to be compatible with gcc that has linker flag '--as-needed' by default
+* Fix: Updated Makefile to be compatible with gcc that has linker flag `--as-needed` by default.
 * Fix: Fixed bugs in `extend()` and `poly2rect()` of `caplet_geo/geoloader.cpp` that cause segmentation fault for certain cases.
 
 _________
