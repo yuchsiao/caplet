@@ -272,14 +272,14 @@ ExtractionInfo &GeoLoader::runCapletQui(const std::string &pathFileBaseName)
 {
     int coreNum = 1;
 
-    const string program = "./capletMPI";
+    const string program = "../caplet_solver/bin/capletMPI";
     const string suffix  = "stdsolver_output";
     const string resultSuffix = "stdsolver_result";
     const string outputFileName = pathFileBaseName+"."+suffix;
     writeFastcapFile(pathFileBaseName, pwcConductorFPList);
 
     stringstream ssCommand;
-    ssCommand << "mpirun -np " << coreNum << " " << program
+    ssCommand << "/usr/bin/mpirun -np " << coreNum << " " << program
               << " -o " << pathFileBaseName << ".cmat "
               << pathFileBaseName << ".qui | tee " << outputFileName;
     cout << ssCommand.str() << endl;
@@ -486,14 +486,14 @@ ExtractionInfo& GeoLoader::runFastcap(const string &pathFileBaseName, const stri
 ExtractionInfo &GeoLoader::runCaplet(const string &pathFileBaseName, const unsigned coreNum)
         throw (FileNotFoundError)
 {
-    const string program = "./capletMPI";
+    const string program = "../caplet_solver/bin/capletMPI";
     const string suffix  = "caplet_output";
     const string resultSuffix = "caplet_result";
     const string outputFileName = pathFileBaseName+"."+suffix;
 
     writeCapletFile(pathFileBaseName, instantiableConductorFPList);
     stringstream ssCommand;
-    ssCommand << "mpirun -np " << coreNum << " " << program
+    ssCommand << "/usr/bin/mpirun -np " << coreNum << " " << program
               << " -o " << pathFileBaseName << ".cmat "
               << pathFileBaseName << ".caplet | tee " << outputFileName;
     cout << ssCommand.str() << endl;
@@ -1908,7 +1908,10 @@ void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
                 //* 3. for each extending arch,
                 //*    find the overlapping rectangles that share the extending edge
                 RectangleGLList &rectList = eachCond->layer[layer][dir];
-                rectList.mergeProjection();
+                //* Version 1.0
+                  rectList.mergeProjection();
+                //* Version 1.1
+//                rectList.mergeProjection1_1();
                 rectList.absorbCommonSupport();
                 if (archLength>0){
                     generateArch(rectList, archLength);
@@ -1920,7 +1923,6 @@ void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
 void intersectArch(RectangleGLList &rectList, RectangleGLList::iterator intersectEnd, RectangleGLList::iterator archPos);
 void generateArch (RectangleGLList &rectList, const float archLength)
 {
-    const float normalDistance = 2.0;
 
     //* find the head of projection flat rects
     RectangleGLList::iterator first = rectList.begin();
@@ -1953,7 +1955,7 @@ void generateArch (RectangleGLList &rectList, const float archLength)
             archPos->shapeType = RectangleGL::ARCH_TYPE;
             archPos->shapeDir  = RectangleGL::Y_DECAY;
             archPos->shapeShift= 0;
-            archPos->shapeNormalDistance = normalDistance * -1;
+            archPos->shapeNormalDistance = each->shapeNormalDistance * -1;
             intersectArch(rectList, first, archPos);
             //* top
             archPos = rectList.insert(insertPos, *each);
@@ -1962,7 +1964,7 @@ void generateArch (RectangleGLList &rectList, const float archLength)
             archPos->shapeType = RectangleGL::ARCH_TYPE;
             archPos->shapeDir  = RectangleGL::Y_DECAY;
             archPos->shapeShift= 0;
-            archPos->shapeNormalDistance = normalDistance *  1;
+            archPos->shapeNormalDistance = each->shapeNormalDistance *  1;
             intersectArch(rectList, first, archPos);
         }
         if (each->yn!=0 || each->zn!=0){
@@ -1975,7 +1977,7 @@ void generateArch (RectangleGLList &rectList, const float archLength)
             archPos->shapeType = RectangleGL::ARCH_TYPE;
             archPos->shapeDir  = RectangleGL::X_DECAY;
             archPos->shapeShift= 0;
-            archPos->shapeNormalDistance = normalDistance * -1;
+            archPos->shapeNormalDistance = each->shapeNormalDistance * -1;
             intersectArch(rectList, first, archPos);
             //* right
             archPos = rectList.insert(insertPos, *each);
@@ -1984,7 +1986,7 @@ void generateArch (RectangleGLList &rectList, const float archLength)
             archPos->shapeType = RectangleGL::ARCH_TYPE;
             archPos->shapeDir  = RectangleGL::X_DECAY;
             archPos->shapeShift= 0;
-            archPos->shapeNormalDistance = normalDistance *  1;
+            archPos->shapeNormalDistance = each->shapeNormalDistance *  1;
             intersectArch(rectList, first, archPos);
         }
     }

@@ -774,9 +774,13 @@ void Caplet::extractCGalerkin(){
     this->generateRHS();
 
     #ifdef DEBUG_PRINT_P
+    std::cout << "Store system matrix in 'pmatrix' and rhs in 'rhs'" << std::endl;
     ofstream fout("pmatrix");
     print_matrix(this->P, this->nCoefs, this->nCoefs, "P", 'u', fout);
     fout.close();
+    ofstream rhsout("rhs");
+    printRHS(rhsout);
+    rhsout.close();
     #endif
 
     #ifdef CAPLET_TIMER
@@ -931,7 +935,25 @@ void Caplet::generateGalerkinPMatrixMPI(){
         int i,j;
         ltind2sub(k, i, j);
         //* Compute the P entry
+
         float result = calGalerkinPEntry(i,j);
+
+        #ifdef DEBUG_DETECT_NAN_INF_ENTRY
+        #include <cmath>
+        if (isnan(result) || isinf(result)){
+        	cout << "Detect nan or inf: (" << i << "," << j << ") = " << result << endl;
+        	cout << "i: " 	<< panels[i][X][MIN] << ", " << panels[i][X][MAX] << ", " 
+        		 			<< panels[i][Y][MIN] << ", " << panels[i][Y][MAX] << ", " 
+        		 			<< panels[i][Z][MIN] << ", " << panels[i][Z][MAX] << ". Dir: "
+        		 			<< dirs[i] << ", " << basisDirs[i] << endl;
+        	cout << "j: " 	<< panels[j][X][MIN] << ", " << panels[j][X][MAX] << ", " 
+        					<< panels[j][Y][MIN] << ", " << panels[j][Y][MAX] << ", " 	
+        					<< panels[j][Z][MIN] << ", " << panels[j][Z][MAX] << ". Dir: "
+        					<< dirs[j] << ", " << basisDirs[j] << endl;
+        }
+        #endif
+
+
         //* Combine rows or columns in place if consecutive panels
         //  belong to the same basis function
         if ( (i!=j) && (ind[i]==ind[j]) ){
@@ -1024,7 +1046,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Y: 	// Xy_Zy
                     return intZXYX(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT: ;
+                case FLAT:  // Xy_Zf
                     return intZXYF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1053,7 +1075,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Z:		// Xz_Yz
                     return intZXYX(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Xz_Yf
                     return intZXYF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1066,7 +1088,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Y:		// Xz_Zy
                     return intZXXY(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Xz_Zf
                     return intZXXF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1101,7 +1123,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Z:		// Yx_Xz
                     return intZXXY(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Yx_Xf
                     return intZXXF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1110,10 +1132,10 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case X:		// Yx_Yx
                     return intZXZX(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case Z:
+                case Z:     // Yx_Yz
                     return intZXZY(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Yx_Yf
                     return intZXZF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1125,7 +1147,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Y:		// Yx_Zy
                     return intZXYZ(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Yx_Zf
                     return intZXYF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1154,7 +1176,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Z:		// Yz_Yz
                     return intZXZX(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Yz_Yf
                     return intZXZF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1166,7 +1188,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
                 case Y:		// Yz_Zy
                     return intZXXZ(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2, basisZs[panel2], basisShifts[panel2], shape2);
-                case FLAT:
+                case FLAT:  // Yz_Zf
                     return intZXXF(	coord_ptr_1, basisZs[panel1], basisShifts[panel1], shape1,
                                     coord_ptr_2);
                 }
@@ -1662,14 +1684,14 @@ void Caplet::printCoefs(){
 }
 
 
-void Caplet::printRHS(){
+void Caplet::printRHS(std::ostream &out){
     if ( this->isLoaded && this->isSolved ){
         switch(this->mode){
         case FAST_GALERKIN:
-            print_matrix(this->rhs, this->nCoefs, this->nWires, "rhs(float)");
+            print_matrix(this->rhs, this->nCoefs, this->nWires, "rhs(float)", 'a', out);
             break;
         case DOUBLE_COLLOCATION:
-            print_matrix(this->drhs, this->nCoefs, this->nWires, "rhs(double)");
+            print_matrix(this->drhs, this->nCoefs, this->nWires, "rhs(double)", 'a', out);
             break;
         default:
             ;

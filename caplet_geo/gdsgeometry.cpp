@@ -1296,11 +1296,16 @@ RectangleGLList::RectangleGLList(const RectangleGLList &rectList)
 { }
 
 //**
-//* not working
+//* mergeProjection Ver1.0
+//* - Used when this RectangleGLList contains only one signed direction
+//*   (as part of a condcutorFPList)
+//* -
 //* - does not support sublayer
 void RectangleGLList::mergeProjection()
 {
     iterator first = this->begin();
+
+    //* Find the first projection
     for ( iterator each=this->begin(); each!=end(); ++each){
         if (each->shapeShift!=0){
             first = each;
@@ -1308,8 +1313,11 @@ void RectangleGLList::mergeProjection()
         }
     }
 
+    //* From the first projection, find
     for ( iterator each = first; each != end(); ++each ){
         for ( iterator after = each; after != end(); ++after){
+
+            //* Inner loop starts from the next of each
             if (after==each){
                 continue;
             }
@@ -1319,16 +1327,20 @@ void RectangleGLList::mergeProjection()
                 cerr << "ERROR: should be in the same direction (regardless of sign)" << endl;
                 continue;
             }
+
+            //* Check if *each and *after are on the same surface
+            //  and either overlapping or edge neighboring
             if (each->isOverlappingOrEdgeNeighboring(*after)==false){
                 continue;
             }
 
+            //* If containing, erase later
             bool flagEraseAfter = false;
             if (each->isContaining(*after)==true){
                 flagEraseAfter = true;
             }
 
-            //* overlapping, not containing, same direction (no sign)
+            //* If overlapping, not containing, same sign of direction
             else if (each->zn!=0 && each->z1==after->z1){
                 //* z-dir
                 if ( each->x1==after->x1 && each->x2==after->x2 ){
@@ -1392,7 +1404,18 @@ RectangleGLList::IteratorList RectangleGLList::insertProjectedOverlappingRectang
 
         //* find and insert the projection of rect onto this list
         if (eachRect.isOverlappingProjection(rect)==true){
-            RectangleGLList::iterator it = this->insert( this->end(), eachRect.intersectProjection(rect) );
+            RectangleGL projection = eachRect.intersectProjection(rect);
+            if (projection.xn!=0){
+                projection.shapeNormalDistance = abs(rect.x1-eachRect.x1);
+            }
+            else if (projection.yn!=0){
+                projection.shapeNormalDistance = abs(rect.y1-eachRect.y1);
+            }
+            else if (projection.zn!=0){
+                projection.shapeNormalDistance = abs(rect.z1-eachRect.z1);
+            }
+
+            RectangleGLList::iterator it = this->insert( this->end(), projection );
             if (it->isEmpty()==true){
                 //* if the inserted projection is *eachRect itself, delete it
                 this->erase(it);

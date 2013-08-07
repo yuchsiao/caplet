@@ -31,7 +31,8 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #include "caplet_blas.h"
 
 #include <string>
-
+#include <fstream>
+#include <iostream>
 
 namespace caplet{
 
@@ -72,7 +73,7 @@ public: //* functions
 
     void printP();
     void printCoefs();
-    void printRHS();
+    void printRHS(std::ostream &fout=std::cout);
     void printCmat();
     void printPanel(int index);
 

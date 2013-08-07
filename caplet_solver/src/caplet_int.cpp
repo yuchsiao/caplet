@@ -266,7 +266,7 @@ float intZXYF(
 
 	float a = (*coord2[Z])[LENGTH];
 	float b = (*coord2[X])[LENGTH];
-	float lz= (*coord1[Y])[LENGTH];
+	float lz= (*coord1[Y])[LENGTH]; // length in rotated z
 
 	float w = lz;
 
@@ -282,7 +282,7 @@ float intZXYF(
 	const int gauss_n2 = (gauss_n+1)/2;
 	const float pm = (y2+y1)/2;
 	const float pr = (y2-y1)/2;
-	const float  p0 = (bz>0)? (y1) : (y2);
+	const float p0 = (bz>0)? (y1) : (y2);
 
 	float  val=0;
 	int init_i = 0;
@@ -687,12 +687,21 @@ float  int_xy(float a, float b, float x, float y, float z, float area){
     float r21 = sqrt(x2_2 + y1_2 + z_2);
     float r22 = sqrt(x2_2 + y2_2 + z_2);
 
+    #ifdef ROBUST_INTEGRAL_CHECK
+    float p =  (( x2_2>zero2 && abs(y2+r22)>zero && abs(y1+r21)>zero )? x2*log( (y2+r22)/(y1+r21) ) :0)
+              +(( x1_2>zero2 && abs(y1+r11)>zero && abs(y2+r12)>zero )? x1*log( (y1+r11)/(y2+r12) ) :0)
+              +(( y2_2>zero2 && abs(x2+r22)>zero && abs(x1+r12)>zero )? y2*log( (x2+r22)/(x1+r12) ) :0)
+              +(( y1_2>zero2 && abs(x1+r11)>zero && abs(x2+r21)>zero )? y1*log( (x1+r11)/(x2+r21) ) :0)
+              +((  z_2>zero2 )?  z*( atan(x2*y1/r21/z) + atan(x1*y2/r12/z)
+                                    -atan(x2*y2/r22/z) - atan(x1*y1/r11/z) ):0);
+    #else
     float p =  ((x2_2>zero2)? x2*log( (y2+r22)/(y1+r21) ):0)
               +((x1_2>zero2)? x1*log( (y1+r11)/(y2+r12) ):0)
               +((y2_2>zero2)? y2*log( (x2+r22)/(x1+r12) ):0)
               +((y1_2>zero2)? y1*log( (x1+r11)/(x2+r21) ):0)
               +(( z_2>zero2)?  z*( atan(x2*y1/r21/z) + atan(x1*y2/r12/z)
                                   -atan(x2*y2/r22/z) - atan(x1*y1/r11/z) ):0);
+    #endif
     return p;
 }
 
@@ -961,50 +970,121 @@ float int_xyxy(float* p1[3][4], float* p2[3][4]){
                 +r1111 *( u112 + v112 ) );
     double temp = 0;
 
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (u002>zero2 &&
+        abs(r0000+v00)>zero &&
+        abs(r0001+v01)>zero &&
+        abs(r0010+v10)>zero &&
+        abs(r0011+v11)>zero    ){
+    #else
     if (u002>zero2){
+    #endif
         temp +=  u00*(	+u00v00*(-1 + 2*log(r0000+v00))
                         -u00v01*(-1 + 2*log(r0001+v01))
                         -u00v10*(-1 + 2*log(r0010+v10))
                         +u00v11*(-1 + 2*log(r0011+v11))	);
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (u012>zero2 &&
+        abs(r0100+v00)>zero &&
+        abs(r0101+v01)>zero &&
+        abs(r0110+v10)>zero &&
+        abs(r0111+v11)>zero    ){
+    #else
     if (u012>zero2){
+    #endif
         temp += -u01*( +u01v00*(-1 + 2*log(r0100+v00))
                        -u01v01*(-1 + 2*log(r0101+v01))
                        -u01v10*(-1 + 2*log(r0110+v10))
                        +u01v11*(-1 + 2*log(r0111+v11)) );
 
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (u102>zero2 &&
+        abs(r1000+v00)>zero &&
+        abs(r1001+v01)>zero &&
+        abs(r1010+v10)>zero &&
+        abs(r1011+v11)>zero    ){
+    #else
     if (u102>zero2){
+    #endif
         temp += -u10*( +u10v00*(-1 + 2*log(r1000+v00))
                        -u10v01*(-1 + 2*log(r1001+v01))
                        -u10v10*(-1 + 2*log(r1010+v10))
                        +u10v11*(-1 + 2*log(r1011+v11)) );
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (u112>zero2 &&
+        abs(r1100+v00)>zero &&
+        abs(r1101+v01)>zero &&
+        abs(r1110+v10)>zero &&
+        abs(r1111+v11)>zero    ){
+    #else
     if (u112>zero2){
+    #endif
         temp += +u11*( +u11v00*(-1 + 2*log(r1100+v00))
                        -u11v01*(-1 + 2*log(r1101+v01))
                        -u11v10*(-1 + 2*log(r1110+v10))
                        +u11v11*(-1 + 2*log(r1111+v11)) );
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (v002>zero2 &&
+        abs(r0000+u00)>zero &&
+        abs(r0100+u01)>zero &&
+        abs(r1000+u10)>zero &&
+        abs(r1100+u11)>zero    ){
+    #else
     if (v002>zero2){
+    #endif
         temp += +v00*( +u00v00*(-1 + 2*log(r0000+u00))
                        -u01v00*(-1 + 2*log(r0100+u01))
                        -u10v00*(-1 + 2*log(r1000+u10))
                        +u11v00*(-1 + 2*log(r1100+u11)) );
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (v012>zero2 &&
+        abs(r0001+u00)>zero &&
+        abs(r0101+u01)>zero &&
+        abs(r1001+u10)>zero &&
+        abs(r1101+u11)>zero    ){
+    #else
     if (v012>zero2){
+    #endif
         temp += -v01*( +u00v01*(-1 + 2*log(r0001+u00))
                        -u01v01*(-1 + 2*log(r0101+u01))
                        -u10v01*(-1 + 2*log(r1001+u10))
                        +u11v01*(-1 + 2*log(r1101+u11)) );
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (v102>zero2 &&
+        abs(r0010+u00)>zero &&
+        abs(r0110+u01)>zero &&
+        abs(r1010+u10)>zero &&
+        abs(r1110+u11)>zero    ){
+    #else
     if (v102>zero2){
+    #endif
         temp += -v10*( +u00v10*(-1 + 2*log(r0010+u00))
                        -u01v10*(-1 + 2*log(r0110+u01))
                        -u10v10*(-1 + 2*log(r1010+u10))
                        +u11v10*(-1 + 2*log(r1110+u11)) );
     }
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if (v112>zero2 &&
+        abs(r0011+u00)>zero &&
+        abs(r0111+u01)>zero &&
+        abs(r1011+u10)>zero &&
+        abs(r1111+u11)>zero    ){
+    #else
     if (v112>zero2){
+    #endif
         temp += +v11*( +u00v11*(-1 + 2*log(r0011+u00))
                        -u01v11*(-1 + 2*log(r0111+u01))
                        -u10v11*(-1 + 2*log(r1011+u10))
@@ -1012,7 +1092,51 @@ float int_xyxy(float* p1[3][4], float* p2[3][4]){
     }
     value += 3*temp;
 
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if ( z2 > zero2 &&
+         abs(r0000-v00)>zero &&
+         abs(r0100-v00)>zero &&
+         abs(r1000-v00)>zero &&
+         abs(r1100-v00)>zero &&
+
+         abs(r0001-v01)>zero &&
+         abs(r0101-v01)>zero &&
+         abs(r1001-v01)>zero &&
+         abs(r1101-v01)>zero &&
+
+         abs(r0010-v10)>zero &&
+         abs(r0110-v10)>zero &&
+         abs(r1010-v10)>zero &&
+         abs(r1110-v10)>zero &&
+
+         abs(r0011-v11)>zero &&
+         abs(r0111-v11)>zero &&
+         abs(r1011-v11)>zero &&
+         abs(r1111-v11)>zero &&
+
+         abs(r0000-u00)>zero &&
+         abs(r0001-u00)>zero &&
+         abs(r0010-u00)>zero &&
+         abs(r0011-u00)>zero &&
+
+         abs(r0100-u01)>zero &&
+         abs(r0101-u01)>zero &&
+         abs(r0110-u01)>zero &&
+         abs(r0111-u01)>zero &&
+
+         abs(r1000-u10)>zero &&
+         abs(r1001-u10)>zero &&
+         abs(r1010-u10)>zero &&
+         abs(r1011-u10)>zero &&
+
+         abs(r1100-u11)>zero &&
+         abs(r1101-u11)>zero &&
+         abs(r1110-u11)>zero &&
+         abs(r1111-u11)>zero     ){
+    #else
     if ( z2 > zero2){
+    #endif
+
 
         value +=
                 4*(
@@ -1431,8 +1555,19 @@ float int_xyyz(float* p1[3][4], float* p2[3][4]){
 				);
 	}
 
-
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if (u1_2 > zero2 &&
+        abs(z1+r1111)>zero  && abs(z2+r1112)>zero  &&
+        abs(z1+r1121)>zero  && abs(z2+r1122)>zero  &&
+        abs(z1+r1211)>zero  && abs(z2+r1212)>zero  &&
+        abs(z1+r1221)>zero  && abs(z2+r1222)>zero  &&
+		abs(v11+r1111)>zero && abs(v11+r1112)>zero && 
+		abs(v12+r1121)>zero && abs(v12+r1122)>zero && 
+		abs(v21+r1211)>zero && abs(v21+r1212)>zero && 
+		abs(v22+r1221)>zero && abs(v22+r1222)>zero    ){
+	#else
 	if (u1_2 > zero2){
+	#endif
 		value += u1*(
 				+( u1_2 - 3*v11_2 )*log( (z1+r1111)/(z2+r1112) )
 				-( u1_2 - 3*v12_2 )*log( (z1+r1121)/(z2+r1122) )
@@ -1458,7 +1593,20 @@ float int_xyyz(float* p1[3][4], float* p2[3][4]){
 					)
 				);
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if (u2_2 > zero2 &&
+        abs(z1+r2111)>zero  && abs(z2+r2112)>zero  &&
+        abs(z1+r2121)>zero  && abs(z2+r2122)>zero  &&
+        abs(z1+r2211)>zero  && abs(z2+r2212)>zero  &&
+        abs(z1+r2221)>zero  && abs(z2+r2222)>zero  &&
+		abs(v11+r2111)>zero && abs(v11+r2112)>zero && 
+		abs(v12+r2121)>zero && abs(v12+r2122)>zero && 
+		abs(v21+r2211)>zero && abs(v21+r2212)>zero &&
+		abs(v22+r2221)>zero && abs(v22+r2222)>zero    ){
+	#else
 	if (u2_2 > zero2){
+	#endif
 		value -= u2*(
 				+( u2_2 - 3*v11_2 )*log( (z1+r2111)/(z2+r2112) )
 				-( u2_2 - 3*v12_2 )*log( (z1+r2121)/(z2+r2122) )
@@ -1486,7 +1634,15 @@ float int_xyyz(float* p1[3][4], float* p2[3][4]){
 	}
 
 
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if (z1_2 > zero2 &&
+		abs(u1 + r1111)>zero && abs(u2 + r2111)>zero &&
+		abs(u1 + r1121)>zero && abs(u2 + r2121)>zero && 
+		abs(u1 + r1211)>zero && abs(u2 + r2211)>zero &&
+		abs(u1 + r1221)>zero && abs(u2 + r2221)>zero    ){
+	#else
 	if (z1_2 > zero2){
+	#endif
 		value += z1*(
 				+( z1_2 - 3*v11_2 )*log( (u1 + r1111)/(u2 + r2111) )
 				-( z1_2 - 3*v12_2 )*log( (u1 + r1121)/(u2 + r2121) )
@@ -1500,7 +1656,17 @@ float int_xyyz(float* p1[3][4], float* p2[3][4]){
 					+v22*z1_2* ( atan( v22*u1/(z1*r1221) ) - atan( v22*u2/(z1*r2221) ) )
 				);
 	}
+
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if (z2_2 > zero2 &&
+		abs(u1 + r1112)>zero && abs(u2 + r2112)>zero &&
+		abs(u1 + r1122)>zero && abs(u2 + r2122)>zero && 
+		abs(u1 + r1212)>zero && abs(u2 + r2212)>zero && 
+		abs(u1 + r1222)>zero && abs(u2 + r2222)>zero 	){
+	#else
 	if (z2_2 > zero2){
+	#endif
 		value -= z2*(
 				+( z2_2 - 3*v11_2 )*log( (u1 + r1112)/(u2 + r2112) )
 				-( z2_2 - 3*v12_2 )*log( (u1 + r1122)/(u2 + r2122) )
@@ -1650,18 +1816,47 @@ float int_xyy(float a, float b, float ly, float x, float y, float z){
 					+v22*(  atan(u1*v22/(z*r122)) - atan(u2*v22/(z*r222)) )
 				);
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( abs(v11_2-z_2) > zero2 && 
+		 abs(u1+r111)>zero && 
+		 abs(u2+r211)>zero    ){
+	#else
 	if ( abs(v11_2-z_2) > zero2 ){
+	#endif
 		val += ( v11_2 - z_2 )*( log( (u1+r111)/(u2+r211) ) );
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( abs(v12_2-z_2) > zero2 &&
+		 abs(u1+r112)>zero &&
+		 abs(u2+r212)>zero    ){
+	#else
 	if ( abs(v12_2-z_2) > zero2 ){
+	#endif
 		val -= ( v12_2 - z_2 )*( log( (u1+r112)/(u2+r212) ) );
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( abs(v21_2-z_2) > zero2 &&
+		 abs(u1+r121)>zero &&
+		 abs(u2+r221)>zero    ){
+	#else
 	if ( abs(v21_2-z_2) > zero2 ){
+	#endif
 		val -= ( v21_2 - z_2 )*( log( (u1+r121)/(u2+r221) ) );
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK	
+	if ( abs(v22_2-z_2) > zero2 &&
+		 abs(u1+r122)>zero &&
+		 abs(u2+r222)>zero    ){
+	#else
 	if ( abs(v22_2-z_2) > zero2 ){
+	#endif
 		val += ( v22_2 - z_2 )*( log( (u1+r122)/(u2+r222) ) );
 	}
+
 	if ( u1_2 > zero2 ){
 		val += 2*u1* (
 					+ v11*log(v11+r111)
@@ -1808,7 +2003,20 @@ float int_xyz(float a, float b, float lz, float x, float y, float z){
 	float r221 = sqrt( u2_2 + v2_2 + z1_2 );
 	float r222 = sqrt( u2_2 + v2_2 + z2_2 );
 
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( z1_2 > zero2 &&
+		 abs(v1+r111)>zero && 
+		 abs(v2+r121)>zero && 
+		 abs(v1+r211)>zero && 
+		 abs(v2+r221)>zero &&
+	  	 abs(u1+r111)>zero && 
+	  	 abs(u2+r211)>zero && 
+	  	 abs(u1+r121)>zero && 
+	  	 abs(u2+r221)>zero     ){ 
+	#else
 	if ( z1_2 > zero2 ){
+	#endif 
 	    val += + 0.5* z1_2 *(
 					  + atan( u1*v1/z1/r111 )
 					  - atan( u1*v2/z1/r121 )
@@ -1819,7 +2027,20 @@ float int_xyz(float a, float b, float lz, float x, float y, float z){
 					  -v1*log((u1+r111)/(u2+r211)) + v2*log((u1+r121)/(u2+r221))
 				);
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( z2_2 > zero2 && 
+         abs(v1+r112)>zero && 
+         abs(v2+r122)>zero && 
+         abs(v1+r212)>zero && 
+         abs(v2+r222)>zero &&
+         abs(u1+r112)>zero && 
+         abs(u2+r212)>zero && 
+         abs(u1+r122)>zero && 
+         abs(u2+r222)>zero     ){		
+	#else
 	if ( z2_2 > zero2 ){
+	#endif
 	    val -= 0.5* z2_2 *(
 					  + atan( u1*v1/z2/r112 )
 					  - atan( u1*v2/z2/r122 )
@@ -1831,7 +2052,15 @@ float int_xyz(float a, float b, float lz, float x, float y, float z){
         	  );
 	}
 
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( v1_2 > zero2 &&
+		 abs(z1+r111)>zero && 
+		 abs(z2+r112)>zero && 
+		 abs(z1+r211)>zero && 
+		 abs(z2+r212)>zero    ){
+	#else
 	if ( v1_2 > zero2 ){
+	#endif
 	    val += 0.5*v1_2*(
 							+ atan(u1*z1/v1/r111)
 							- atan(u1*z2/v1/r112)
@@ -1842,7 +2071,16 @@ float int_xyz(float a, float b, float lz, float x, float y, float z){
 	    			  +u2*log((z1+r211)/(z2+r212))
         );
 	}
+
+	#ifdef ROBUST_INTEGRAL_CHECK
+	if ( v2_2 > zero2 &&
+		 abs(z1+r121)>zero && 
+		 abs(z2+r122)>zero && 
+		 abs(z1+r221)>zero && 
+		 abs(z2+r222)>zero     ){
+	#else
 	if ( v2_2 > zero2 ){
+	#endif	
 	    val -= 0.5*v2_2*(
 							+ atan(u1*z1/v2/r121)
 							- atan(u1*z2/v2/r122)
@@ -1952,12 +2190,21 @@ double int_xy_d(float a, float b, float x, float y, float z, float area){
     double r21 = sqrt(x2_2 + y1_2 + z_2);
     double r22 = sqrt(x2_2 + y2_2 + z_2);
 
+    #ifdef ROBUST_INTEGRAL_CHECK
+    double p = ( ( x2_2>zero2 && abs(y2+r22)>zero && abs(y1+r21)>zero )? x2*log( (y2+r22)/(y1+r21) ):0)
+              +( ( x1_2>zero2 && abs(y1+r11)>zero && abs(y2+r12)>zero )? x1*log( (y1+r11)/(y2+r12) ):0)
+              +( ( y2_2>zero2 && abs(x2+r22)>zero && abs(x1+r12)>zero )? y2*log( (x2+r22)/(x1+r12) ):0)
+              +( ( y1_2>zero2 && abs(x1+r11)>zero && abs(x2+r21)>zero )? y1*log( (x1+r11)/(x2+r21) ):0)
+              +( (  z_2>zero2 )?  z*( atan(x2*y1/r21/z) + atan(x1*y2/r12/z)
+                                  -atan(x2*y2/r22/z) - atan(x1*y1/r11/z) ):0);
+  	#else
     double p = ((x2_2>zero2)? x2*log( (y2+r22)/(y1+r21) ):0)
               +((x1_2>zero2)? x1*log( (y1+r11)/(y2+r12) ):0)
               +((y2_2>zero2)? y2*log( (x2+r22)/(x1+r12) ):0)
               +((y1_2>zero2)? y1*log( (x1+r11)/(x2+r21) ):0)
               +(( z_2>zero2)?  z*( atan(x2*y1/r21/z) + atan(x1*y2/r12/z)
                                   -atan(x2*y2/r22/z) - atan(x1*y1/r11/z) ):0);
+    #endif
     return p;
 }
 

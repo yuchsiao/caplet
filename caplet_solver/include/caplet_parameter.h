@@ -49,6 +49,8 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #define CAPLET_FLAT_ARCH
 #define CAPLET_FLAT_SIDE
 
+#define ROBUST_INTEGRAL_CHECK 
+
 //* Openmp num of threads
 #ifdef CAPLET_OPENMP
     #define CAPLET_OPENMP_NUM_THREADS 4
@@ -102,9 +104,9 @@ const bool switch_analytical_intZXXY = switch_analytical_integral;
 
 //* Define zero squared level used in analytical integrals
 //  Consider the nano scale of VLSI interconnects and layout minimum grids.
-//  Taking the length below 0.1 nm as zero is a reasonable assumption
-//- Default: 1e-20
-const float zero  = 1e-10;
+//  Taking the length much lower than the grid size (nm) is a reasonable assumption
+//- Default: 1e-12
+const float zero  = 1e-12;
 const float zero2 = zero*zero;
 
 
