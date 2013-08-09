@@ -1037,11 +1037,11 @@ RectangleGL RectangleGL::intersectProjection(const RectangleGL &rect) const
         result.z1 = this->z1;
         result.z2 = this->z2;
     }
-    if (*this == result){ // marked as empty for RectangleGL.isEmpty()
-        result.xn=0;
-        result.yn=0;
-        result.zn=0;
-    }
+//    if (*this == result){ // marked as empty for RectangleGL.isEmpty()
+//        result.xn=0;
+//        result.yn=0;
+//        result.zn=0;
+//    }
     result.shapeShift = 1; // marked as inserted rect
     return result;
 }
@@ -1297,9 +1297,11 @@ RectangleGLList::RectangleGLList(const RectangleGLList &rectList)
 
 //**
 //* mergeProjection Ver1.0
-//* - Used when this RectangleGLList contains only one signed direction
-//*   (as part of a condcutorFPList)
-//* -
+//* - Only used when 'this' RectangleGLList contains only one signed direction
+//*   (being as part of a condcutorFPList)
+//* - If each contains what is after, then erase the latter one.
+//* - If only overlapping with the same boundaries, then merge (update *each and erase *after)
+//* - Inner loop returns to the first one if any modification happens to the list
 //* - does not support sublayer
 void RectangleGLList::mergeProjection()
 {
@@ -1315,14 +1317,14 @@ void RectangleGLList::mergeProjection()
 
     //* From the first projection, find
     for ( iterator each = first; each != end(); ++each ){
-        for ( iterator after = each; after != end(); ++after){
+        for ( iterator after = first; after != end(); ++after){
 
             //* Inner loop starts from the next of each
             if (after==each){
                 continue;
             }
 
-            //* debug: must be in the same direction (regardless of sign)
+            //* Debug: must be in the same direction (regardless of sign)
             if (each->xn*after->xn==0 && each->yn*after->yn==0 && each->zn*after->zn==0){
                 cerr << "ERROR: should be in the same direction (regardless of sign)" << endl;
                 continue;
@@ -1370,12 +1372,121 @@ void RectangleGLList::mergeProjection()
             }
 
             if (flagEraseAfter==true){
-                erase(after);
-                after = first;
+                if (after==first){
+                    after = erase(after);
+                    first = after;
+                }
+                else{
+                    after = erase(after);
+                    after = first;
+                }
             }
         }
     }
 }
+
+
+//**
+//* mergeProjection Ver1.1
+//* - Only used when 'this' RectangleGLList contains only one signed direction
+//*   (being as part of a condcutorFPList)
+//* - Honor the shapeNormalDistance info
+//* - Assume the grid size is 1e-9 (zero)
+//* - If each contains what is after, then erase the latter one.
+//* - If only overlapping with the same boundaries, then merge (update *each and erase *after)
+//* - does not support sublayer
+void RectangleGLList::mergeProjection1_1()
+{
+    const float zero = 1e-9;
+    iterator first = this->begin();
+
+    //* Find the first projection
+    for ( iterator each=this->begin(); each!=end(); ++each){
+        if (each->shapeShift!=0){
+            first = each;
+            break;
+        }
+    }
+
+    //* From the first projection, find
+    for ( iterator each = first; each != end(); ++each ){
+        if (each->shapeShift==0){
+            continue;
+        }
+        for ( iterator after = first; after != end(); ++after){
+            //* Inner loop starts from the next of each
+            if (after==each){
+                continue;
+            }
+
+            if (after->shapeShift==0){
+                continue;
+            }
+
+            //* Check if *each and *after are on the same surface
+            //  and either overlapping or edge neighboring
+            if (each->isOverlappingOrEdgeNeighboring(*after)==false){
+                continue;
+            }
+
+            //* If containing and *after is farther than *each, erase *after later
+            bool flagEraseAfter = false;
+            if (each->isContaining(*after)==true &&
+                each->shapeNormalDistance <= after->shapeNormalDistance ){
+
+                flagEraseAfter = true;
+            }
+
+            //* If overlapping but not containing with the same sign of direction
+            //* and projected from the same distance
+            else if (each->z1 * after->z1 == 1){
+                //* z-dir
+                if ( each->x1==after->x1 && each->x2==after->x2 &&
+                     abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
+                    //* same xrange
+                    each->y1 = min(each->y1, after->y1);
+                    each->y2 = max(each->y2, after->y2);
+                    flagEraseAfter = true;
+                }
+                else if ( each->y1==after->y1 && each->y2==after->y2 &&
+                          abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
+                    //* same yrange
+                    each->x1 = min(each->x1, after->x1);
+                    each->x2 = max(each->x2, after->x2);
+                    flagEraseAfter = true;
+                }
+            }
+            else if (each->x1 * after->x1 == 1){
+                //* x-dir
+                if ( abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
+                    each->y1 = min(each->y1, after->y1);
+                    each->y2 = max(each->y2, after->y2);
+                    flagEraseAfter = true;
+                }
+            }
+            else if (each->y1 * after->y1 == 1){
+                //* y-dir
+                if ( abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
+                    each->x1 = min(each->x1, after->x1);
+                    each->x2 = max(each->x2, after->x2);
+                    flagEraseAfter = true;
+                }
+            }
+
+            if (flagEraseAfter==true){
+                if (after==first){
+                    after = erase(after);
+                    first = after;
+                }
+                else{
+                    after = erase(after);
+                    after = first;
+                }
+            }
+        }
+    }
+}
+
 
 //**
 //* insertProjectedOverlappingRectangleGL
@@ -1416,6 +1527,9 @@ RectangleGLList::IteratorList RectangleGLList::insertProjectedOverlappingRectang
             }
 
             RectangleGLList::iterator it = this->insert( this->end(), projection );
+
+            //* Ver1.0 obsolete
+            /*
             if (it->isEmpty()==true){
                 //* if the inserted projection is *eachRect itself, delete it
                 this->erase(it);
@@ -1424,6 +1538,10 @@ RectangleGLList::IteratorList RectangleGLList::insertProjectedOverlappingRectang
                 //* keep the iterator
                 itList.push_back(it);
             }
+            */
+
+            //* Ver1.1
+            itList.push_back(it);
         }
     }
     this->erase(dummyEnd);
@@ -1472,25 +1590,26 @@ void RectangleGLList::absorbCommonSupport(RectangleGLList::IteratorList &itList)
     }
 }
 
-void RectangleGLList::markCommonSupport()
-{
-    for ( iterator each = begin(); each!=--end(); ++each ){
-        if (each->isEmpty()){
-            continue;
-        }
-        iterator after = each;
-        for ( ++after; after!=end(); ++after){
-            if (after->isEmpty()){
-                continue;
-            }
-            if (*after == *each){
-                after->xn = 0;
-                after->yn = 0;
-                after->zn = 0;
-            }
-        }
-    }
-}
+//* Ver1.0 obsolete
+//void RectangleGLList::markCommonSupport()
+//{
+//    for ( iterator each = begin(); each!=--end(); ++each ){
+//        if (each->isEmpty()){
+//            continue;
+//        }
+//        iterator after = each;
+//        for ( ++after; after!=end(); ++after){
+//            if (after->isEmpty()){
+//                continue;
+//            }
+//            if (*after == *each){
+//                after->xn = 0;
+//                after->yn = 0;
+//                after->zn = 0;
+//            }
+//        }
+//    }
+//}
 
 
 //**

@@ -1453,11 +1453,18 @@ void computeAdjacency(const RectangleList               &rectList,
         RectangleList::const_iterator               rectJit = rectIit;
         DirAdjacencyListOfRectangleList::iterator   adjJit = adjIit;
         for ( ++rectJit, ++adjJit;
+//        for ( rectJit = rectList.begin(), adjJit = adjacency.begin();
               rectJit != rectList.end(); ++rectJit, ++adjJit )
         {
-            //* share the same y-range
+//            if (rectJit == rectIit){
+//                continue;
+//            }
+
+            //* I contains J in y-dir
             if ( (rectIit->y1 <= rectJit->y1 && rectJit->y1 <  rectIit->y2) ||
-                 (rectIit->y1 <  rectJit->y2 && rectJit->y2 <= rectIit->y2) )
+                 (rectIit->y1 <  rectJit->y2 && rectJit->y2 <= rectIit->y2) ||
+                 (rectJit->y1 <= rectIit->y1 && rectIit->y1 <  rectJit->y2) ||
+                 (rectJit->y1 <  rectIit->y2 && rectIit->y2 <= rectJit->y2)    )
             {
                 //* connected from I's right
                 if ( rectIit->x2 == rectJit->x1 ){
@@ -1470,16 +1477,18 @@ void computeAdjacency(const RectangleList               &rectList,
                     (*adjJit)[RIGHT].push_back(make_pair(rectIit->y1, rectIit->y2));
                 }
             }
-            //* share the same x-range
+            //* I contains J in x-dir
             if ( (rectIit->x1 <= rectJit->x1 && rectJit->x1 <  rectIit->x2) ||
-                 (rectIit->x1 <  rectJit->x2 && rectJit->x2 <= rectIit->x2) )
+                 (rectIit->x1 <  rectJit->x2 && rectJit->x2 <= rectIit->x2) ||
+                 (rectJit->x1 <= rectIit->x1 && rectIit->x1 <  rectJit->x2) ||
+                 (rectJit->x1 <  rectIit->x2 && rectIit->x2 <= rectJit->x2)    )
             {
-                //* connected from I's below
+                //* connected from I's top
                 if ( rectIit->y2 == rectJit->y1 ){
                     (*adjIit)[FRONT].push_back(make_pair(rectJit->x1, rectJit->x2));
                     (*adjJit)[BACK ].push_back(make_pair(rectIit->x1, rectIit->x2));
                 }
-                //* connected from I's above
+                //* connected from I's bottom
                 else if ( rectIit->y1 == rectJit->y2 ){
                     (*adjIit)[BACK ].push_back(make_pair(rectJit->x1, rectJit->x2));
                     (*adjJit)[FRONT].push_back(make_pair(rectIit->x1, rectIit->x2));
@@ -1882,6 +1891,11 @@ void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
                         for ( RectangleGLList::const_iterator eachRect2 = rectList2.begin();
                               eachRect2 != rectList2.end(); ++eachRect2){
 
+                            //* If *eachRect2 is a projection, continue
+                            if (eachRect2->shapeShift==1){
+                                continue;
+                            }
+
                             //* project rect from eachCond2 onto rects from eachCond1
                             RectangleGLList::IteratorList insertedRectItList =
                                     rectList1.insertProjectedOverlappingRectangleGL(*eachRect2, closestDistanceOfInterest);
@@ -1891,7 +1905,7 @@ void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
 
                     }
                     //* face-to-side
-                    // to be done: may not be necessary
+                    //- may not be necessary
                 }
             }
         }
@@ -1908,11 +1922,15 @@ void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
                 //* 3. for each extending arch,
                 //*    find the overlapping rectangles that share the extending edge
                 RectangleGLList &rectList = eachCond->layer[layer][dir];
-                //* Version 1.0
-                  rectList.mergeProjection();
-                //* Version 1.1
-//                rectList.mergeProjection1_1();
+
+                //* Ver1.0 Obsolete
+//                  rectList.mergeProjection();
+
+                //* Ver1.1
+                rectList.mergeProjection1_1();
+
                 rectList.absorbCommonSupport();
+
                 if (archLength>0){
                     generateArch(rectList, archLength);
                 }
@@ -1995,9 +2013,10 @@ void intersectArch(RectangleGLList &rectList, RectangleGLList::iterator intersec
 {
     for ( RectangleGLList::iterator eachRect = rectList.begin();
           eachRect != intersectEnd; ++eachRect){
-        RectangleGLList::iterator it = rectList.insert(archPos, archPos->intersectArchOnFlat(*eachRect));
-        if (it->isEmpty()==true){
-            rectList.erase(it);
+
+        RectangleGL rect = archPos->intersectArchOnFlat(*eachRect);
+        if (rect.isEmpty()==false){
+            rectList.insert(archPos, rect);
         }
     }
     archPos = rectList.erase(archPos);

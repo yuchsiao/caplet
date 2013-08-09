@@ -436,6 +436,7 @@ public:
     //* mergeProjection
     //* - self merge
     void mergeProjection();
+    void mergeProjection1_1();
 
     //**
     //* insertOverlappingRectangleGL
@@ -447,7 +448,9 @@ public:
 
     void absorbCommonSupport();
     void absorbCommonSupport(IteratorList &itList);
-    void markCommonSupport();
+
+    //* Ver1.0 obsolete
+    //void markCommonSupport();
 
 
     //****

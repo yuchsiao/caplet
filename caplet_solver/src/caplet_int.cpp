@@ -1857,16 +1857,33 @@ float int_xyy(float a, float b, float ly, float x, float y, float z){
 		val += ( v22_2 - z_2 )*( log( (u1+r122)/(u2+r222) ) );
 	}
 
-	if ( u1_2 > zero2 ){
-		val += 2*u1* (
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if ( u1_2 > zero2 &&
+         abs(v11+r111)>zero &&
+         abs(v12+r112)>zero &&
+         abs(v21+r121)>zero &&
+         abs(v22+r122)>zero    ){
+    #else
+    if ( u1_2 > zero2 ){
+    #endif
+        val += 2*u1* (
 					+ v11*log(v11+r111)
 					- v12*log(v12+r112)
 					- v21*log(v21+r121)
 					+ v22*log(v22+r122)
 				);
 	}
-	if ( u2_2 > zero2 ){
-		val -= 2*u2* (
+
+    #ifdef ROBUST_INTEGRAL_CHECK
+    if ( u2_2 > zero2 &&
+         abs(v11+r211)>zero &&
+         abs(v12+r212)>zero &&
+         abs(v21+r221)>zero &&
+         abs(v22+r222)>zero    ){
+    #else
+    if ( u2_2 > zero2 ){
+    #endif
+        val -= 2*u2* (
 					+ v11*log(v11+r211)
 					- v12*log(v12+r212)
 					- v21*log(v21+r221)
