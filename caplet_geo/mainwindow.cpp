@@ -443,7 +443,7 @@ void MainWindow::on_extractionButton_clicked()
             errorVectorString += QString::number(errorVector[i]/percent) + " ";
         }
 
-        QString msg = QString("# (") + QDateTime().currentDateTime().toString() + QString("): Fastcap extraction is done!");
+        QString msg = QString("# (") + QDateTime().currentDateTime().toString() + QString("): Done Cmat extraction using FASTCAP.");
         logTime(msg);
         log(pathFileBaseName);
         log(resultText);
@@ -463,7 +463,7 @@ void MainWindow::on_extractionButton_clicked()
             errorVectorString += QString::number(errorVector[i]/percent) + " ";
         }
 
-        QString msg = QString("# (") + QDateTime().currentDateTime().toString() + QString("): Caplet extraction is done!");
+        QString msg = QString("# (") + QDateTime().currentDateTime().toString() + QString("): Done Cmat extraction using CAPLET.");
         logTime(msg);
         log(pathFileBaseName);
         log(resultText);
@@ -482,7 +482,7 @@ void MainWindow::on_extractionButton_clicked()
             errorVectorString += QString::number(errorVector[i]/percent) + " ";
         }
 
-        QString msg = QString("# (") + QDateTime().currentDateTime().toString() + QString("): Caplet extraction is done!");
+        QString msg = QString("# (") + QDateTime().currentDateTime().toString() + QString("): Done Cmat extraction using CAPLET with PWC basis functions ");
         logTime(msg);
         log(pathFileBaseName);
         log(resultText);
@@ -511,7 +511,7 @@ void MainWindow::on_computeReferenceButton_clicked()
     int thisNPanel = thisResult->nBasisFunction;
     int prevNPanel = 0;
     float err = 1;
-    logTime("Start to compute the reference capacitance matrix...");
+    logTime("Start to extract reference Cmat...");
     int counter = 1;
     do{
         ++counter;
@@ -558,7 +558,7 @@ void MainWindow::on_computeReferenceButton_clicked()
         log(QString::number(counter) + QString(", ") + ssTableLine.str().c_str());
     }
 
-    logTime("Done comuting the reference capacitance matrix.");
+    logTime("Done reference Cmat extraction.");
 }
 
 void MainWindow::on_loadReferenceButton_clicked()
