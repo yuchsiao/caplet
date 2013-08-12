@@ -30,11 +30,13 @@ namespace caplet{
 
 template <class T>
 void print_vector(T* x, int nx, const std::string name){
-	std::cout << name << " = [ ";
+	if (name.empty()==false) {
+		std::cout << name << std::endl;
+	}
 	for (int i=0; i<nx; i++){
 		std::cout << x[i] << " ";
 	}
-	std::cout << "]" << std::endl;
+	std::cout << std::endl;
 }
 template void print_vector<float> (float*  x, int nx, const std::string name);
 template void print_vector<double>(double* x, int nx, const std::string name);
@@ -42,7 +44,9 @@ template void print_vector<int>   (int*    x, int nx, const std::string name);
 
 template <class T>
 void print_matrix(T* A, int m, int n, const std::string name, char uplo, std::ostream &out=std::cout){
-    out << name << ": " << std::endl;
+	if (name.empty()==false) {
+		out << name << std::endl;
+	}
 	// Fortran order
 
 	if ( uplo == 'a' ){

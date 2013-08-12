@@ -43,6 +43,7 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    isLoaded(false),
     panelRenderer(0),
     geoLoader(0),
     fileName(""),
@@ -74,6 +75,12 @@ MainWindow::MainWindow(QWidget *parent) :
     archLengthValidator = new QDoubleValidator(this);
     archLengthValidator->setBottom(0);
 
+    projDistValidator = new QDoubleValidator(this);
+    projDistValidator->setBottom(0);
+
+    mergeDistValidator = new QDoubleValidator(this);
+    mergeDistValidator->setBottom(0);
+
     coreNumValidator = new QIntValidator(this);
     coreNumValidator->setBottom(1);
 
@@ -90,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //* validator
     ui->pwcSizeLineEdit    ->setValidator(pwcSizeValidator);
     ui->archLengthLineEdit ->setValidator(archLengthValidator);
+    ui->projDistLineEdit   ->setValidator(projDistValidator);
+    ui->mergeDistLineEdit  ->setValidator(mergeDistValidator);
     ui->coreNumLineEdit    ->setValidator(coreNumValidator);
     ui->initPWCSizeLineEdit->setValidator(initPWCSizeValidator);
     ui->alphaLineEdit      ->setValidator(alphaValidator);
@@ -143,6 +152,12 @@ void MainWindow::displayInstantiableBasisFunction()
     const float archUnit = 1e-6;
     float archLength= ui->archLengthLineEdit->text().toFloat() * archUnit;
 
+    const float projDistUnit = 1e-6;
+    const float projDist = ui->projDistLineEdit->text().toFloat() * projDistUnit;
+
+    const float mergeDistUnit = 1e-6;
+    const float mergeDist = ui->mergeDistLineEdit->text().toFloat() * mergeDistUnit;
+
     if (ui->flatCheckBox->isChecked()==false){
         //* no flat and no arch
         archLength = -1;
@@ -152,7 +167,7 @@ void MainWindow::displayInstantiableBasisFunction()
         archLength = 0;
     }
 
-    const ConductorFPList &condList = geoLoader->getInstantiableBasisFunction(unit, archLength);
+    const ConductorFPList &condList = geoLoader->getInstantiableBasisFunction(unit, archLength, projDist, mergeDist);
     panelRenderer->loadGLRects(&condList);
 }
 
@@ -181,6 +196,7 @@ void MainWindow::loadFile(float unit)
     catch (GeometryNotManhattanError &e){
         QMessageBox::critical(this, "Invliad Geometries", e.what());
         fileName = "";
+        isLoaded = false;
         return;
     }
     on_actionNone_triggered();
@@ -252,9 +268,31 @@ void MainWindow::on_actionOpenFile_triggered(){
 
             loadFile();
             panelRenderer->initView();
+
+            //* Auto load ref camt
+            QString refFileName = canonicalPath+"/"+fileBaseName+"_ref.cmat";
+
+            ifstream fin(refFileName.toUtf8().data());
+            if ( fin.is_open() ){
+                //* File exists
+                //* Check dimension
+                string line;
+                string token;
+                getline(fin, line);
+                stringstream ss(line);
+                size_t count = 0;
+                while (ss>>token) {
+                    ++count;
+                }
+                //* Load if dimension is correct
+                if (count == geoLoader->getNumberOfConductor()) {
+                    geoLoader->loadReferenceResult(refFileName.toUtf8().data());
+                }
+            }
+            fin.close();
         }
     }
-    //* not quite working
+
     //* only for display purpose
     else if (suffix.compare("qui")==0){
         fileName = inputFileName;
@@ -385,6 +423,10 @@ void MainWindow::on_pwcSizeLineEdit_returnPressed()
 
 void MainWindow::on_extractionButton_clicked()
 {
+    if (isLoaded == false) {
+        return;
+    }
+
     const float percent = 0.01;
 
     QString pathFileBaseName = canonicalPath+"/"+fileBaseName;
@@ -449,7 +491,7 @@ void MainWindow::on_extractionButton_clicked()
     }
 }
 
-void MainWindow::on_referenceButton_clicked()
+void MainWindow::on_computeReferenceButton_clicked()
 {
     if (isLoaded == false){
         return;
@@ -501,7 +543,9 @@ void MainWindow::on_referenceButton_clicked()
         log(msg);
     }while(err>epsilon || thisNPanel==prevNPanel);
 
-    geoLoader->storeLastAsReference();
+    QString pathFileNameCmat = canonicalPath+"/"+fileBaseName+"_ref.cmat";
+    geoLoader->storeLastAsReference(pathFileNameCmat.toUtf8().data());
+
     list<ExtractionInfo> resultList = geoLoader->compareAllAgainstReference();
     stringstream ssHeader;
     resultList.front().printBasicHeader(ssHeader);
@@ -515,6 +559,54 @@ void MainWindow::on_referenceButton_clicked()
     }
 
     logTime("Done comuting the reference capacitance matrix.");
+}
+
+void MainWindow::on_loadReferenceButton_clicked()
+{
+    if (isLoaded == false){
+        return;
+    }
+
+    QString inputFileName = QFileDialog::getOpenFileName(
+            this,
+            tr("Open File"),
+            QDir::currentPath(),
+                tr("Capacitance Matrix [*.cmat] (*.cmat);;All files (*.*)") );
+
+    if ( inputFileName.isEmpty()==true ){
+        return;
+    }
+
+    //* check file exsistence
+    ifstream fin(inputFileName.toUtf8().data());
+    if ( !fin.is_open() ){
+        QMessageBox::critical(this, "File Not Found", inputFileName + " is not found.");
+        fin.close();
+        return;
+    }
+
+    //* Check dimension
+    string line;
+    string token;
+    getline(fin, line);
+    stringstream ss(line);
+    size_t count = 0;
+    while (ss>>token) {
+        ++count;
+    }
+    if (count != geoLoader->getNumberOfConductor()) {
+        QMessageBox::critical(this, "Reference Matrix Loading Failure",
+                              QString("<b>Matrix Size Incompatible</b><br>") +
+                              "Incorrect matrix size (" + QString::number(count) + ")! <br>" +
+                              "Matrix size must be the same as the number of conductors (" +
+                              QString::number(geoLoader->getNumberOfConductor()) + ")." );
+        fin.close();
+        return;
+    }
+
+    geoLoader->loadReferenceResult(inputFileName.toUtf8().data());
+    fin.close();
+
 }
 
 void MainWindow::logTime(const QString &msg, bool flagBlue)
@@ -565,6 +657,16 @@ void MainWindow::on_archCheckBox_clicked(bool checked)
 }
 
 void MainWindow::on_archLengthLineEdit_returnPressed()
+{
+    on_actionCAPLET_triggered();
+}
+
+void MainWindow::on_projDistLineEdit_returnPressed()
+{
+    on_actionCAPLET_triggered();
+}
+
+void MainWindow::on_mergeDistLineEdit_returnPressed()
 {
     on_actionCAPLET_triggered();
 }

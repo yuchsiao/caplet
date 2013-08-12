@@ -40,6 +40,7 @@ class Caplet{
 public: //* enum
     enum MODE{
         FAST_GALERKIN,
+        DOUBLE_GALERKIN,
         DOUBLE_COLLOCATION
     };
 
@@ -52,7 +53,7 @@ public: //* functions
     Caplet();
     ~Caplet();
 
-    void extractC(MODE mode=FAST_GALERKIN);
+    void extractC(MODE mode=DOUBLE_GALERKIN);
 
     int  getNPanels() const;
     int  getNCoefs() const;
@@ -71,11 +72,13 @@ public: //* functions
     void saveCmat(const std::string filename);
     void saveCoefs(const std::string filename);
 
-    void printP();
+    void printP(std::ostream &fout=std::cout);
     void printCoefs();
     void printRHS(std::ostream &fout=std::cout);
     void printCmat();
     void printPanel(int index);
+
+    //* Versioned algorithms
 
 private: //* variables
 	static float epsilon0;
@@ -116,7 +119,6 @@ private: //* variables
 	double* dcoefs;
 	double*	dCmat;
 
-
     #ifdef CAPLET_TIMER
 	double timeStart;
     double timeAfterFilling;
@@ -127,15 +129,20 @@ private: //* variables
 	double totalTime;
     #endif
 
+	bool flagMergeProjection1_0;
+
 private: //* functions
 	void extractCCollocationDouble();
 	void extractCGalerkin();
+	void extractCGalerkinDouble();
 
 	void generateCollocationPMatrixDouble();
     void generateRHSDouble();
 
 	void generateGalerkinPMatrix();
+	void generateGalerkinPMatrixDouble();
     void generateGalerkinPMatrixMPI();
+    void generateGalerkinPMatrixDoubleMPI();
     void generateRHS();
 
 	void modifyPanelAspectRatio();

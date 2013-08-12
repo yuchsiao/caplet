@@ -107,7 +107,7 @@ inline float flat(float x, float w){
 inline float arch(float x, float w){
     //* Constant arch shapes are good enough for most of the time
     #ifdef CAPLET_FLAT_ARCH
-    return 1;
+    return 0.5;
     #endif
 
     #ifdef DEBUG_SHAPE_BOUNDARY_CHECK
@@ -126,7 +126,7 @@ inline float arch(float x, float w){
 
 inline float side(float x, float w){
     #ifdef CAPLET_FLAT_SIDE
-    return 1;
+    return 0.5;
     #endif
 
     #ifdef DEBUG_SHAPE_BOUNDARY_CHECK

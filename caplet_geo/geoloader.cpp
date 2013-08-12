@@ -65,8 +65,8 @@ void printMatrix(T** matrix, int nrow, int ncol){
 //**
 //* GeoLoader constructor
 GeoLoader::GeoLoader()
-    :isLoaded(false)
-{ }
+    :isLoaded(false){
+}
 
 //**
 //* GeoLoader destructor
@@ -188,14 +188,15 @@ const ConductorFPList &GeoLoader::getPWCBasisFunction() const
 }
 
 
-const ConductorFPList &GeoLoader::getInstantiableBasisFunction(const float unit, const float archLength)
-{
+const ConductorFPList &GeoLoader::getInstantiableBasisFunction(const float unit, const float archLength,
+                                                               const float projectionDistance, const float projectionMergeDistance){
+
     clock_t tBefore = clock();
 
     generateConductorList(geometryConductorList, false);
     instantiableConductorFPList.constructFrom(geometryConductorList, unit);
     geometryConductorList.clear();
-    instantiateBasisFunction(instantiableConductorFPList, archLength);
+    instantiateBasisFunction(instantiableConductorFPList, archLength, projectionDistance, projectionMergeDistance);
     clock_t tAfter = clock();
     tInstantiableConstruction = difftime(tAfter, tBefore)/CLOCKS_PER_SEC;
 
@@ -595,9 +596,34 @@ const ExtractionInfo &GeoLoader::getReferenceResult() const
     return referenceResult;
 }
 
-const ExtractionInfo &GeoLoader::storeLastAsReference()
+void GeoLoader::loadReferenceResult(const string &filename)
+{
+    size_t size = geometryConductorFPList.size();
+
+    ifstream fin(filename.c_str());
+
+    //* read matrix
+    referenceResult.capacitanceMatrix.resize(size, vector<float>(size));
+    string line;
+    for (size_t i=0; i<size; ++i){
+        getline(fin, line);
+        stringstream ss(line);
+        for (size_t j=0; j<size; ++j){
+            ss >> referenceResult.capacitanceMatrix[i][j];
+            referenceResult.capacitanceMatrix[i][j];
+        }
+    }
+    fin.close();
+}
+
+const ExtractionInfo &GeoLoader::storeLastAsReference(const string &pathFileNameCmat="")
 {
     referenceResult = extractionInfoList.back();
+    if (pathFileNameCmat.empty()==false){
+        ofstream fout(pathFileNameCmat.c_str());
+        referenceResult.printMatrix(fout);
+        fout.close();
+    }
     return referenceResult;
 }
 
@@ -624,6 +650,13 @@ void GeoLoader::clearResult()
     extractionInfoList.clear();
 }
 
+//__________________________________________________________
+//*
+//* Getters and setters
+//*
+size_t GeoLoader::getNumberOfConductor() const {
+    return geometryConductorFPList.size();
+}
 
 
 //**
@@ -1846,9 +1879,10 @@ void discretizeXDirRectangleGL(
 //*   the source rect (at this point).
 //* - fixed normal distance.
 void generateArch (RectangleGLList &rectList, const float archLength);
-void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
+void instantiateBasisFunction (ConductorFPList &cond, const float archLength,
+                               const float projectionDistance, const float projectionMergeDistance)
 {
-    float closestDistanceOfInterest = 2e-6; // 2um
+    float closestDistanceOfInterest = projectionDistance;
 
     unsigned nMetal = cond.front().nMetal;
 
@@ -1924,12 +1958,15 @@ void instantiateBasisFunction (ConductorFPList &cond, const float archLength)
                 RectangleGLList &rectList = eachCond->layer[layer][dir];
 
                 //* Ver1.0 Obsolete
-//                  rectList.mergeProjection();
-
-                //* Ver1.1
-                rectList.mergeProjection1_1();
-
+                #ifdef MERGE_PROJECTION_VER1_0
+                rectList.mergeProjection();
                 rectList.absorbCommonSupport();
+                #else
+                //* Ver1.1
+                rectList.mergeProjection1_1(projectionMergeDistance);
+                rectList.absorbCommonSupport();
+                rectList.removeBadProjection(caplet::DEFAULT_COINCIDENTAL_MARGIN);
+                #endif
 
                 if (archLength>0){
                     generateArch(rectList, archLength);
@@ -2460,6 +2497,7 @@ throw (length_error)
     }
     return errorVector;
 }
+
 
 
 

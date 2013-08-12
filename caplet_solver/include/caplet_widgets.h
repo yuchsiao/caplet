@@ -71,9 +71,9 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 namespace caplet{
 
 template <class T>
-void print_vector(T* x, int nx, const std::string name="vector");
+void print_vector(T* x, int nx, const std::string name="");
 template <class T>
-void print_matrix(T* A, int n, int m, const std::string name="matrix", char uplo = 'a', std::ostream& out=std::cout);
+void print_matrix(T* A, int n, int m, const std::string name="", char uplo = 'a', std::ostream& out=std::cout);
 
 
 

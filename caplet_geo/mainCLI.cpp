@@ -34,32 +34,37 @@ const string geoExt     = "geo";
 const string fastcapExt = "qui";
 const string capletExt  = "caplet";
 
+void printUsage(const string &command){
+    cout << "Usage  : " << command << " [OPTIONS] filename.geo" << endl;
+    cout << "Output : filename.qui    for piecewise constant basis functions" << endl
+         << "         filename.caplet for instantiable basis functions" << endl;
+    cout << "Options: " << endl
+         << "       Basis Function Type:" << endl
+         << "       -t,--type pwc  : piecewise constant basis functions" << endl
+         << "       -t,--type ins  : instantaible basis functions  (default)" << endl
+         << endl
+         // << "       Grid Unit for GDS and Size:" << endl
+         // << "       --unit n    : unit in nm (default)" << endl
+         // << "       --unit u    : unit in um" << endl
+         // << "       --unit m    : unit in mm" << endl
+         // << "       --unit 1    : unit in  m" << endl
+         // << endl
+         << "       Basis Function Parameter:" << endl
+         << "       -s,--size        value: panel size for piecewise constant basis functions " << endl
+         << "                               (default:  50e-9, value>0)" << endl
+         << "                               arch length for instantiable basis functions" << endl
+         << "                               (default: 300e-9, value>0: normal, " << endl
+         << "                                                 value=0: no arch, " << endl
+         << "                                                 value<0: no flat shapes" << endl
+         << "       -p,--proj-dist   value: projection distance (default: 2e-6)" << endl
+         << "       -m,--merge-dist  value: projection merge distance (default: 1e-7)" << endl
+         << endl;    
+}
+
 int main(int argc, char *argv[])
 {
     if (argc<2){
-        cout << "CAPLET_GEO_CLI: Construct basis functions of specified type " << endl;
-        cout << "Usage  : " << argv[0] << " --options filename.geo" << endl;
-        cout << "Output : filename.qui    for piecewise constant basis functions" << endl
-             << "         filename.caplet for instantiable basis functions" << endl;
-        cout << "Options: " << endl
-             << "       Basis Function Type:" << endl
-             << "       --type pwc  : piecewise constant basis functions" << endl
-             << "       --type ins  : instantaible basis functions  (default)" << endl
-             << endl
-             << "       Grid Unit for GDS and Size:" << endl
-             << "       --unit n    : unit in nm (default)" << endl
-             << "       --unit u    : unit in um" << endl
-             << "       --unit m    : unit in mm" << endl
-             << "       --unit 1    : unit in  m" << endl
-             << endl
-             << "       Basis Function Parameter:" << endl
-             << "       --size value: panel size for piecewise constant basis functions " << endl
-             << "                     (default:  50, value>0)" << endl
-             << "                     arch length for instantiable basis functions" << endl
-             << "                     (default: 300, value>0: normal, " << endl
-             << "                                    value=0: no arch, " << endl
-             << "                                    value<0: no flat shapes" << endl
-             << endl;
+        printUsage(argv[0]);
         return 0;
     }
 
@@ -71,14 +76,22 @@ int main(int argc, char *argv[])
 
     //* Read options
     BasisFunctionType basisFunctionType = INSTANTIABLE_BASIS;
-    double unit = 1e-9;
-    double size = 300;
+    float unit = 1e-9;
+    float size = 300;
     bool   isSizeInput = false;
+
+    float projDist  = 2000 *unit;
+    float mergeDist =   10 *unit;
+
     for ( list<string>::iterator each=argvList.begin();
           each!=argvList.end(); ){
 
-        //* --type
-        if (each->compare("--type")==0){
+        //* -t,--type
+        if (each->compare("--type")==0 || each->compare("-t")==0){
+            if (argvList.empty()==true){
+                printUsage(argv[0]);
+                return 0;
+            }
             each = argvList.erase(each);
             string type = *each;
             if (type.compare("pwc")==0){
@@ -95,31 +108,35 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        //* --unit
-        if (each->compare("--unit")==0){
-            each = argvList.erase(each);
-            switch (*each->begin()){
-            case 'u':
-                unit = 1e-6;
-                break;
-            case 'n':
-                unit = 1e-9;
-                break;
-            case 'm':
-                unit = 1e-3;
-                break;
-            case '1':
-                unit = 1;
-                break;
-            default:
-                unit = 1e-9;
-            }
-            each = argvList.erase(each);
-            continue;
-        }
+        //* -u,--unit
+        // if (each->compare("--unit")==0 || each->compare("-u")==0){
+        //     each = argvList.erase(each);
+        //     switch (*each->begin()){
+        //     case 'u':
+        //         unit = 1e-6;
+        //         break;
+        //     case 'n':
+        //         unit = 1e-9;
+        //         break;
+        //     case 'm':
+        //         unit = 1e-3;
+        //         break;
+        //     case '1':
+        //         unit = 1;
+        //         break;
+        //     default:
+        //         unit = 1e-9;
+        //     }
+        //     each = argvList.erase(each);
+        //     continue;
+        // }
 
-        //* --size
-        if (each->compare("--size")==0){
+        //* -s,--size
+        if (each->compare("--size")==0 || each->compare("-s")==0){
+            if (argvList.empty()==true) {
+                printUsage(argv[0]);
+                return 0;
+            }
             each = argvList.erase(each);
             isSizeInput = true;
             string sizeString = *each;
@@ -129,8 +146,55 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        //* -p,--proj-dist
+        if (each->compare("--proj-dist")==0 || each->compare("-p")==0){
+            if (argvList.empty()==true) {
+                printUsage(argv[0]);
+                return 0;
+            }
+            each = argvList.erase(each);
+            string projDistString = *each;
+            istringstream projDistSS(projDistString);
+            projDistSS >> projDist;
+            each = argvList.erase(each);
+            continue;
+        }
+
+        //* -m,--merge-dist
+        if (each->compare("--merge-dist")==0 || each->compare("-m")==0){
+            if (argvList.empty()==true) {
+                printUsage(argv[0]);
+                return 0;
+            }
+            each = argvList.erase(each);
+            string mergeDistString = *each;
+            istringstream mergeDistSS(mergeDistString);
+            mergeDistSS >> mergeDist;
+            each = argvList.erase(each);
+            continue;
+        }
+
         //* increment
         ++each;
+    }
+
+
+    //* Check if nonknown options
+    for ( list<string>::iterator each=argvList.begin();
+          each!=argvList.end(); ++each){
+
+        if ( (*each)[0] =='-'){
+            cout << "CAPLET_GEO_CLI: Unknown option (" << *each << ")." << endl;
+            return 0;
+        }
+    }
+
+
+    //* If not input file specified
+    if ( argvList.empty()==true ){
+        cout << "CAPLET_GEO_CLI: No input file specified." << endl;
+        printUsage(argv[0]);
+        return 0;
     }
 
     //* Set size to default value if size is not specified.
@@ -183,7 +247,6 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-
     //* Setup GeoLoader
     GeoLoader geoloader;
     try{
@@ -216,7 +279,7 @@ int main(int argc, char *argv[])
     case INSTANTIABLE_BASIS:{
         outputFileName += capletExt;
         try{
-            writeCapletFile(fileBaseName, geoloader.getInstantiableBasisFunction(unit, size*unit));
+            writeCapletFile(fileBaseName, geoloader.getInstantiableBasisFunction(unit, size*unit, projDist, mergeDist));
         }
         catch (FileNotFoundError e){
             cerr << "ERROR: Cannot write file. (" << outputFileName << ")" << endl;
@@ -227,7 +290,7 @@ int main(int argc, char *argv[])
         cerr << "ERROR: Unknown basis function type." << endl;
         exit(1);
     }
-    cout << "CAPLET_GEO: Basis functions constructed! (" << outputFileName << ")" << endl;
+    cout << "CAPLET_GEO: Done basis functions construction. (" << outputFileName << ")" << endl;
 
     return 0;
 }

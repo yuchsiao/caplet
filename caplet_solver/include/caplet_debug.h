@@ -36,7 +36,7 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 //#define DEBUG_ASPECT_RATIO_VALIDITY
 
 //* Print P matrix to file "pmatrix"
-#define DEBUG_PRINT_P
+// #define DEBUG_PRINT_P
 
 //* Print nan and inf entries
 // #define DEBUG_DETECT_NAN_INF_ENTRY

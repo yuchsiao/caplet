@@ -299,8 +299,8 @@ void PanelRenderer::paintGL()
     glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
     glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
 
-    const float shift = 10e-9;
-    const float shift2  = 20e-9;
+    const float shiftSmall =  5e-9;
+    const float shiftLarge = 10e-9;
 
 
     if ( isLoaded ){
@@ -314,60 +314,60 @@ void PanelRenderer::paintGL()
                 glNormal3f(rectIt->xn, rectIt->yn, rectIt->zn);
 
                 if (rectIt->xn != 0){
-                    if (rectIt->shapeNormalDistance!=0 && rectIt->xn > 0){
-                        glVertex3f( rectIt->x1+shift, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x1+shift, rectIt->y2, rectIt->z1 );
-                        glVertex3f( rectIt->x1+shift, rectIt->y2, rectIt->z2 );
-                        glVertex3f( rectIt->x1+shift, rectIt->y1, rectIt->z2 );
+                    if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->xn > 0){
+                        glVertex3f( rectIt->x1+shiftLarge, rectIt->y1, rectIt->z1 );
+                        glVertex3f( rectIt->x1+shiftLarge, rectIt->y2, rectIt->z1 );
+                        glVertex3f( rectIt->x1+shiftLarge, rectIt->y2, rectIt->z2 );
+                        glVertex3f( rectIt->x1+shiftLarge, rectIt->y1, rectIt->z2 );
                     }
-                    else if (rectIt->shapeNormalDistance!=0 && rectIt->xn < 0){
-                        glVertex3f( rectIt->x1-shift, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x1-shift, rectIt->y2, rectIt->z1 );
-                        glVertex3f( rectIt->x1-shift, rectIt->y2, rectIt->z2 );
-                        glVertex3f( rectIt->x1-shift, rectIt->y1, rectIt->z2 );
+                    else if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->xn < 0){
+                        glVertex3f( rectIt->x1-shiftLarge, rectIt->y1, rectIt->z1 );
+                        glVertex3f( rectIt->x1-shiftLarge, rectIt->y2, rectIt->z1 );
+                        glVertex3f( rectIt->x1-shiftLarge, rectIt->y2, rectIt->z2 );
+                        glVertex3f( rectIt->x1-shiftLarge, rectIt->y1, rectIt->z2 );
                     }
-                    else if (rectIt->shapeShift!=0 && rectIt->xn > 0){
-                        glVertex3f( rectIt->x1+shift2, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x1+shift2, rectIt->y2, rectIt->z1 );
-                        glVertex3f( rectIt->x1+shift2, rectIt->y2, rectIt->z2 );
-                        glVertex3f( rectIt->x1+shift2, rectIt->y1, rectIt->z2 );
-                    }
-                    else if (rectIt->shapeShift!=0 && rectIt->xn < 0){
-                        glVertex3f( rectIt->x1-shift2, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x1-shift2, rectIt->y2, rectIt->z1 );
-                        glVertex3f( rectIt->x1-shift2, rectIt->y2, rectIt->z2 );
-                        glVertex3f( rectIt->x1-shift2, rectIt->y1, rectIt->z2 );
-                    }
+//                    else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->xn > 0){
+//                        glVertex3f( rectIt->x1+shiftSmall, rectIt->y1, rectIt->z1 );
+//                        glVertex3f( rectIt->x1+shiftSmall, rectIt->y2, rectIt->z1 );
+//                        glVertex3f( rectIt->x1+shiftSmall, rectIt->y2, rectIt->z2 );
+//                        glVertex3f( rectIt->x1+shiftSmall, rectIt->y1, rectIt->z2 );
+//                    }
+//                    else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->xn < 0){
+//                        glVertex3f( rectIt->x1-shiftSmall, rectIt->y1, rectIt->z1 );
+//                        glVertex3f( rectIt->x1-shiftSmall, rectIt->y2, rectIt->z1 );
+//                        glVertex3f( rectIt->x1-shiftSmall, rectIt->y2, rectIt->z2 );
+//                        glVertex3f( rectIt->x1-shiftSmall, rectIt->y1, rectIt->z2 );
+//                    }
                     glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
                     glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1 );
                     glVertex3f( rectIt->x1, rectIt->y2, rectIt->z2 );
                     glVertex3f( rectIt->x1, rectIt->y1, rectIt->z2 );
                 }
                 else if (rectIt->yn != 0){
-                    if (rectIt->shapeNormalDistance!=0 && rectIt->yn > 0){
-                        glVertex3f( rectIt->x1, rectIt->y1+shift, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1+shift, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1+shift, rectIt->z2 );
-                        glVertex3f( rectIt->x1, rectIt->y1+shift, rectIt->z2 );
+                    if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->yn > 0){
+                        glVertex3f( rectIt->x1, rectIt->y1+shiftLarge, rectIt->z1 );
+                        glVertex3f( rectIt->x2, rectIt->y1+shiftLarge, rectIt->z1 );
+                        glVertex3f( rectIt->x2, rectIt->y1+shiftLarge, rectIt->z2 );
+                        glVertex3f( rectIt->x1, rectIt->y1+shiftLarge, rectIt->z2 );
                     }
-                    else if (rectIt->shapeNormalDistance!=0 && rectIt->yn < 0){
-                        glVertex3f( rectIt->x1, rectIt->y1-shift, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1-shift, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1-shift, rectIt->z2 );
-                        glVertex3f( rectIt->x1, rectIt->y1-shift, rectIt->z2 );
+                    else if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->yn < 0){
+                        glVertex3f( rectIt->x1, rectIt->y1-shiftLarge, rectIt->z1 );
+                        glVertex3f( rectIt->x2, rectIt->y1-shiftLarge, rectIt->z1 );
+                        glVertex3f( rectIt->x2, rectIt->y1-shiftLarge, rectIt->z2 );
+                        glVertex3f( rectIt->x1, rectIt->y1-shiftLarge, rectIt->z2 );
                     }
-                    else if (rectIt->shapeShift!=0 && rectIt->yn > 0){
-                        glVertex3f( rectIt->x1, rectIt->y1+shift2, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1+shift2, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1+shift2, rectIt->z2 );
-                        glVertex3f( rectIt->x1, rectIt->y1+shift2, rectIt->z2 );
-                    }
-                    else if (rectIt->shapeShift!=0 && rectIt->yn < 0){
-                        glVertex3f( rectIt->x1, rectIt->y1-shift2, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1-shift2, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1-shift2, rectIt->z2 );
-                        glVertex3f( rectIt->x1, rectIt->y1-shift2, rectIt->z2 );
-                    }
+//                    else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->yn > 0){
+//                        glVertex3f( rectIt->x1, rectIt->y1+shiftSmall, rectIt->z1 );
+//                        glVertex3f( rectIt->x2, rectIt->y1+shiftSmall, rectIt->z1 );
+//                        glVertex3f( rectIt->x2, rectIt->y1+shiftSmall, rectIt->z2 );
+//                        glVertex3f( rectIt->x1, rectIt->y1+shiftSmall, rectIt->z2 );
+//                    }
+//                    else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->yn < 0){
+//                        glVertex3f( rectIt->x1, rectIt->y1-shiftSmall, rectIt->z1 );
+//                        glVertex3f( rectIt->x2, rectIt->y1-shiftSmall, rectIt->z1 );
+//                        glVertex3f( rectIt->x2, rectIt->y1-shiftSmall, rectIt->z2 );
+//                        glVertex3f( rectIt->x1, rectIt->y1-shiftSmall, rectIt->z2 );
+//                    }
                     glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
                     glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1 );
                     glVertex3f( rectIt->x2, rectIt->y1, rectIt->z2 );
@@ -375,30 +375,30 @@ void PanelRenderer::paintGL()
                 }
                 else if (rectIt->zn != 0){
                     //* include both Z and FLAT cases
-                    if (rectIt->shapeNormalDistance!=0 && rectIt->zn > 0){
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shift );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shift );
-                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shift );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shift );
+                    if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->zn > 0){
+                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shiftLarge );
+                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shiftLarge );
+                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shiftLarge );
+                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shiftLarge );
                     }
-                    else if (rectIt->shapeNormalDistance!=0 && rectIt->zn < 0){
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shift );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shift );
-                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shift );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shift );
+                    else if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->zn < 0){
+                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shiftLarge );
+                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shiftLarge );
+                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shiftLarge );
+                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shiftLarge );
                     }
-                    else if (rectIt->shapeShift!=0 && rectIt->zn > 0){
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shift2 );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shift2 );
-                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shift2 );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shift2 );
-                    }
-                    else if (rectIt->shapeShift!=0 && rectIt->zn < 0){
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shift2 );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shift2 );
-                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shift2 );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shift2 );
-                    }
+//                    else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->zn > 0){
+//                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shiftSmall );
+//                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shiftSmall );
+//                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shiftSmall );
+//                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shiftSmall );
+//                    }
+//                    else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->zn < 0){
+//                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shiftSmall );
+//                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shiftSmall );
+//                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shiftSmall );
+//                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shiftSmall );
+//                    }
                     glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
                     glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1 );
                     glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1 );
@@ -425,100 +425,100 @@ void PanelRenderer::paintGL()
                     glNormal3f(rectIt->xn, rectIt->yn, rectIt->zn);
 
                     if (rectIt->xn != 0){
-                        if (rectIt->shapeNormalDistance!=0 && rectIt->xn > 0){
-                            glVertex3f( rectIt->x1+shift, rectIt->y1, rectIt->z1 );
-                            glVertex3f( rectIt->x1+shift, rectIt->y2, rectIt->z1 );
-                            glVertex3f( rectIt->x1+shift, rectIt->y2, rectIt->z2 );
-                            glVertex3f( rectIt->x1+shift, rectIt->y1, rectIt->z2 );
+                        if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->xn > 0){
+                            glVertex3f( rectIt->x1+shiftLarge, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x1+shiftLarge, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1+shiftLarge, rectIt->y2, rectIt->z2 );
+                            glVertex3f( rectIt->x1+shiftLarge, rectIt->y1, rectIt->z2 );
                         }
-                        else if (rectIt->shapeNormalDistance!=0 && rectIt->xn < 0){
-                            glVertex3f( rectIt->x1-shift, rectIt->y1, rectIt->z1 );
-                            glVertex3f( rectIt->x1-shift, rectIt->y2, rectIt->z1 );
-                            glVertex3f( rectIt->x1-shift, rectIt->y2, rectIt->z2 );
-                            glVertex3f( rectIt->x1-shift, rectIt->y1, rectIt->z2 );
+                        else if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->xn < 0){
+                            glVertex3f( rectIt->x1-shiftLarge, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x1-shiftLarge, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1-shiftLarge, rectIt->y2, rectIt->z2 );
+                            glVertex3f( rectIt->x1-shiftLarge, rectIt->y1, rectIt->z2 );
                         }
-                        else if (rectIt->shapeShift!=0 && rectIt->xn > 0){
-                            glVertex3f( rectIt->x1+shift2, rectIt->y1, rectIt->z1 );
-                            glVertex3f( rectIt->x1+shift2, rectIt->y2, rectIt->z1 );
-                            glVertex3f( rectIt->x1+shift2, rectIt->y2, rectIt->z2 );
-                            glVertex3f( rectIt->x1+shift2, rectIt->y1, rectIt->z2 );
+                        else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->xn > 0){
+                            glVertex3f( rectIt->x1+shiftSmall, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x1+shiftSmall, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1+shiftSmall, rectIt->y2, rectIt->z2 );
+                            glVertex3f( rectIt->x1+shiftSmall, rectIt->y1, rectIt->z2 );
                         }
-                        else if (rectIt->shapeShift!=0 && rectIt->xn < 0){
-                            glVertex3f( rectIt->x1-shift2, rectIt->y1, rectIt->z1 );
-                            glVertex3f( rectIt->x1-shift2, rectIt->y2, rectIt->z1 );
-                            glVertex3f( rectIt->x1-shift2, rectIt->y2, rectIt->z2 );
-                            glVertex3f( rectIt->x1-shift2, rectIt->y1, rectIt->z2 );
+                        else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->xn < 0){
+                            glVertex3f( rectIt->x1-shiftSmall, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x1-shiftSmall, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1-shiftSmall, rectIt->y2, rectIt->z2 );
+                            glVertex3f( rectIt->x1-shiftSmall, rectIt->y1, rectIt->z2 );
                         }
                         else{
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1 );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z2 );
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z2 );
                         }
                     }
                     else if (rectIt->yn != 0){
-                        if (rectIt->shapeNormalDistance!=0 && rectIt->yn > 0){
-                            glVertex3f( rectIt->x1, rectIt->y1+shift, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1+shift, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1+shift, rectIt->z2 );
-                            glVertex3f( rectIt->x1, rectIt->y1+shift, rectIt->z2 );
+                        if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->yn > 0){
+                            glVertex3f( rectIt->x1, rectIt->y1+shiftLarge, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1+shiftLarge, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1+shiftLarge, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1+shiftLarge, rectIt->z2 );
                         }
-                        else if (rectIt->shapeNormalDistance!=0 && rectIt->yn < 0){
-                            glVertex3f( rectIt->x1, rectIt->y1-shift, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1-shift, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1-shift, rectIt->z2 );
-                            glVertex3f( rectIt->x1, rectIt->y1-shift, rectIt->z2 );
+                        else if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->yn < 0){
+                            glVertex3f( rectIt->x1, rectIt->y1-shiftLarge, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1-shiftLarge, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1-shiftLarge, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1-shiftLarge, rectIt->z2 );
                         }
-                        else if (rectIt->shapeShift!=0 && rectIt->yn > 0){
-                            glVertex3f( rectIt->x1, rectIt->y1+shift2, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1+shift2, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1+shift2, rectIt->z2 );
-                            glVertex3f( rectIt->x1, rectIt->y1+shift2, rectIt->z2 );
+                        else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->yn > 0){
+                            glVertex3f( rectIt->x1, rectIt->y1+shiftSmall, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1+shiftSmall, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1+shiftSmall, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1+shiftSmall, rectIt->z2 );
                         }
-                        else if (rectIt->shapeShift!=0 && rectIt->yn < 0){
-                            glVertex3f( rectIt->x1, rectIt->y1-shift2, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1-shift2, rectIt->z1 );
-                            glVertex3f( rectIt->x2, rectIt->y1-shift2, rectIt->z2 );
-                            glVertex3f( rectIt->x1, rectIt->y1-shift2, rectIt->z2 );
+                        else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->yn < 0){
+                            glVertex3f( rectIt->x1, rectIt->y1-shiftSmall, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1-shiftSmall, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1-shiftSmall, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1-shiftSmall, rectIt->z2 );
                         }
                         else{
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z2 );
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z2 );
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z2 );
                         }
                     }
                     else if (rectIt->zn != 0){
                         //* include both Z and FLAT cases
-                        if (rectIt->shapeNormalDistance!=0 && rectIt->zn > 0){
-                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shift );
-                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shift );
-                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shift );
-                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shift );
+                        if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->zn > 0){
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shiftLarge );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shiftLarge );
+                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shiftLarge );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shiftLarge );
                         }
-                        else if (rectIt->shapeNormalDistance!=0 && rectIt->zn < 0){
-                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shift );
-                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shift );
-                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shift );
-                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shift );
+                        else if (rectIt->shapeType==RectangleGL::FLAT_TYPE && rectIt->shapeShift!=0 && rectIt->zn < 0){
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shiftLarge );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shiftLarge );
+                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shiftLarge );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shiftLarge );
                         }
-                        else if (rectIt->shapeShift!=0 && rectIt->zn > 0){
-                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shift2 );
-                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shift2 );
-                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shift2 );
-                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shift2 );
+                        else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->zn > 0){
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1+shiftSmall );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1+shiftSmall );
+                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1+shiftSmall );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1+shiftSmall );
                         }
-                        else if (rectIt->shapeShift!=0 && rectIt->zn < 0){
-                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shift2 );
-                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shift2 );
-                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shift2 );
-                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shift2 );
+                        else if (rectIt->shapeType==RectangleGL::ARCH_TYPE && rectIt->zn < 0){
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1-shiftSmall );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1-shiftSmall );
+                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1-shiftSmall );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1-shiftSmall );
                         }
                         else{
-                        glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1 );
-                        glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1 );
-                        glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y1, rectIt->z1 );
+                            glVertex3f( rectIt->x2, rectIt->y2, rectIt->z1 );
+                            glVertex3f( rectIt->x1, rectIt->y2, rectIt->z1 );
                         }
                     }
                     else{

@@ -112,7 +112,7 @@ const float zero2 = zero*zero;
 
 //* Approximation gaurd ring to increase guard ring for
 //  approximating calColD by 1/r
-const double approximationGuardRingForCalColD = 2.0;
+const double approximationGuardRingForCalColD = 1.0;
 
 }
 

@@ -24,6 +24,7 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #define GEOLOADER_H
 
 #include "gdsgeometry.h"
+#include "debug.h"
 
 #include <iostream>
 #include <string>
@@ -101,7 +102,9 @@ public:
     const ConductorFPList &getGeometryConductorList(const float unit);
     const ConductorFPList &getPWCBasisFunction(const float unit, const float suggestedPanelSize);
     const ConductorFPList &getPWCBasisFunction() const;
-    const ConductorFPList &getInstantiableBasisFunction(const float unit, const float archLength);
+    const ConductorFPList &getInstantiableBasisFunction(const float unit, const float archLength,
+                                                        const float projectionDistance=caplet::DEFAULT_PROJECTION_DISTANCE,
+                                                        const float projectionMergeDistance=caplet::DEFAULT_PROJECTION_MERGE_DISTANCE);
 
     void loadQui(const std::string &inputFileName) throw (FileNotFoundError);
 
@@ -123,13 +126,25 @@ public:
     int**   viaDef;     //* size: nVia x 2
     int**   viaConnect; //* size: nVia x 2
 
+    //______________________________________________________
+    //*
+    //* Reference result
+    //*
     const ExtractionInfo& getLastResult() const;
     const ExtractionInfo& getReferenceResult() const;
-    const ExtractionInfo& storeLastAsReference();
+    void loadReferenceResult(const std::string &filename);
+    const ExtractionInfo& storeLastAsReference(const std::string &pathFileNameCmat);
     ExtractionInfoList compareAllAgainstReference() const;
     void clearResult();
+
+    //______________________________________________________
+    //* Getters and setters
+    size_t getNumberOfConductor() const;
+
 private:
     bool                    isLoaded;
+    //______________________________________________________
+    //* Paramters
 
     ConductorList           metalConductorList;
     LayeredRectangleList    viaLayeredRectangleList;
@@ -176,7 +191,8 @@ void generate3dRects(const RectangleList                    &rect2dList,
                      Conductor                              &cond);
 
 void discretizeDisjointSurface(ConductorFPList &cond, const float suggestedPanelSize);
-void instantiateBasisFunction (ConductorFPList &cond, const float archLength);
+void instantiateBasisFunction (ConductorFPList &cond, const float archLength,
+                               const float projectionDistance, const float projectionMergeDistance);
 
 
 //****

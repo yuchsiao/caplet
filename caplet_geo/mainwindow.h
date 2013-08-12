@@ -98,10 +98,13 @@ private slots:
     //* parameter setting event
     void on_pwcSizeLineEdit_returnPressed();
     void on_extractionButton_clicked();
-    void on_referenceButton_clicked();
+    void on_computeReferenceButton_clicked();
+    void on_loadReferenceButton_clicked();
     void on_flatCheckBox_clicked(bool checked);
     void on_archCheckBox_clicked(bool checked);
     void on_archLengthLineEdit_returnPressed();
+    void on_projDistLineEdit_returnPressed();
+    void on_mergeDistLineEdit_returnPressed();
 
     //* misc event
     void on_actionPalette_triggered();
@@ -123,6 +126,8 @@ private:
     QActionGroup*       solverGroup;
     QDoubleValidator*   pwcSizeValidator;
     QDoubleValidator*   archLengthValidator;
+    QDoubleValidator*   projDistValidator;
+    QDoubleValidator*   mergeDistValidator;
     QIntValidator*      coreNumValidator;
 
     QDoubleValidator*   initPWCSizeValidator;

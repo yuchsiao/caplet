@@ -1,6 +1,5 @@
 /*
 Created : 2010-07-28
-Modified: 2013-07-19, 2013-02-13
 Author  : Yu-Chung Hsiao
 Email   : project.caplet@gmail.com
 */
@@ -53,10 +52,13 @@ using namespace std;
 float Caplet::epsilon0 	= 8.8541878176e-12f;
 float Caplet::pi		= 3.1415926535f;
 
+//__________________________________________________________
+//*
+//* Ctor and Dtor
+//*
 
-//**** Public functions
 Caplet::Caplet()
-    : isLoaded(false), isSolved(false){
+    : isLoaded(false), isSolved(false), flagMergeProjection1_0(true){
 }
 
 
@@ -95,6 +97,7 @@ void Caplet::clear(){
 
                 delete[] this->Cmat;
                 break;
+            case DOUBLE_GALERKIN:
             case DOUBLE_COLLOCATION:
                 delete[] this->dP;
                 delete[] this->drhs;
@@ -107,10 +110,20 @@ void Caplet::clear(){
             }
         }
 	}
-    this->mode = FAST_GALERKIN;
     this->isInstantiable = false;
 }
 
+
+//__________________________________________________________
+//*
+//* Versioned algorithms
+//*
+
+
+//__________________________________________________________
+//*
+//* Public functions
+//*
 
 void Caplet::loadFastcapFile(const std::string filename){
 
@@ -395,9 +408,11 @@ void Caplet::loadCapletFile(const std::string filename){
 		ifile >> this->basisZs[i];
 		ifile >> this->basisShifts[i];
 	}
-	this->P 	= new float[this->nCoefs*this->nCoefs];
-	this->rhs 	= new float[this->nCoefs*this->nWires];
-	this->coefs = new float[this->nCoefs*this->nWires];
+
+
+	// this->P 	= new float[this->nCoefs*this->nCoefs];
+	// this->rhs 	= new float[this->nCoefs*this->nWires];
+	// this->coefs = new float[this->nCoefs*this->nWires];
 
 	// construct nWireCoefs
 	this->nWireCoefs = new int[this->nWires];
@@ -441,6 +456,7 @@ void Caplet::saveCmat(const std::string filename){
                 ofile << endl;
             }
             break;
+		case DOUBLE_GALERKIN:            
         case DOUBLE_COLLOCATION:
             for (int i=0; i<this->nWires; i++){
                 for (int j=0; j<this->nWires; j++){
@@ -474,6 +490,7 @@ void Caplet::saveCoefs(const std::string filename){
                 ofile << endl;
             }
             break;
+        case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
             for (int i=0; i<this->nCoefs; i++){
                 for (int j=0; j<this->nWires; j++){
@@ -491,6 +508,8 @@ void Caplet::saveCoefs(const std::string filename){
 }
 
 void Caplet::extractC(MODE mode){
+	this->mode = mode;
+
     #ifdef CAPLET_TIMER
 	this->fillingTime = 0;
 	this->solvingTime = 0;
@@ -501,14 +520,6 @@ void Caplet::extractC(MODE mode){
     caplet::atan(1);
     caplet::log(1);
     #endif
-
-    //* Setup mode
-    if (isInstantiable==true){
-        this->mode = FAST_GALERKIN;
-    }
-    else{
-        this->mode = mode;
-    }
 
     //* Init MPI
     MPI::Init();
@@ -522,9 +533,11 @@ void Caplet::extractC(MODE mode){
 		std::cout << "Number of basis functions   : " << this->nCoefs << std::endl;
         std::cout << "Number of basis shapes      : " << this->nPanels << std::endl;
     }
-
 	for (int iter = 0; iter < N_ITER; iter++){
-        switch ( this->mode ){
+        switch ( mode ){
+    	case DOUBLE_GALERKIN:
+    		this->extractCGalerkinDouble();
+    		break;
         case FAST_GALERKIN:
 			this->extractCGalerkin();
 			break;
@@ -548,8 +561,19 @@ void Caplet::extractC(MODE mode){
     #endif
 
     //* Print Cmat
+    std::cout << "Cmat" << std::endl;
     this->printCmat();
 	std::cout << endl;
+
+	#ifdef DEBUG_PRINT_P
+    std::cout << "Store system matrix in 'pmatrix' and rhs in 'rhs'" << std::endl;
+    ofstream pmatrixOut("pmatrix");
+    printP(pmatrixOut);
+    pmatrixOut.close();
+    ofstream rhsOut("rhs");
+    printRHS(rhsOut);
+    rhsOut.close();
+    #endif
 }
 
 
@@ -731,11 +755,95 @@ void Caplet::generateRHSDouble(){
     dcopy_(&nRHS, this->dcoefs, &inc, this->drhs, &inc);
 }
 
+//__________________________________________________________
+//*
+//* DOUBLE GALERKIN MODE
+//*
+void Caplet::extractCGalerkinDouble(){
 
-//*********************
+    int rank = MPI::COMM_WORLD.Get_rank();
+
+    if ( this->isLoaded == true ){
+        if( rank==0 ){
+            this->dP = new double[this->nCoefs*this->nCoefs];
+        }else{
+            this->dP = new double[1];
+        }
+
+        this->drhs 	 = new double[this->nCoefs*this->nWires];
+        this->dcoefs = new double[this->nCoefs*this->nWires];
+        this->dCmat  = new double[this->nWires*this->nWires];
+
+    }else{
+        std::cerr << "ERROR: structure file is not yet loaded" << std::endl;
+    }
+    #ifdef CAPLET_TIMER
+    this->timeStart = MPI::Wtime();;
+    #endif
+
+
+    #ifdef CAPLET_MPI
+    this->generateGalerkinPMatrixDoubleMPI();
+    #else
+    this->generateGalerkinPMatrixDouble();
+    #endif
+
+
+    if (MPI::COMM_WORLD.Get_rank()!=0){
+        return;
+    }
+    //* End of core with non-zero rank
+
+    this->generateRHSDouble();
+
+    #ifdef CAPLET_TIMER
+    this->timeAfterFilling = MPI::Wtime();;
+    #endif
+
+
+    //* Solve the system
+    int  	info;
+    char 	uplo = 'u';
+
+    //* Query optimal workspace size
+    double*	work = new double[1];
+    int		lwork = -1;
+    int*	ipiv = new int[this->nCoefs];
+    dsysv_(&uplo, &nCoefs, &nWires, dP, &nCoefs, ipiv, this->dcoefs, &nCoefs, work, &lwork, &info);
+    lwork = work[0];
+    delete[] work;
+
+    //* Solve system using optimal work length
+    work = new double[lwork];
+    dsysv_(&uplo, &nCoefs, &nWires, dP, &nCoefs, ipiv, this->dcoefs, &nCoefs, work, &lwork, &info);
+    delete[] ipiv;
+    delete[] work;
+
+
+    //* Use matrix-matrix product to compute Cmat from coefs
+    char 	transA 	= 't';
+    char 	transB 	= 'n';
+    double 	alpha 	= 4*pi*epsilon0;
+    double 	beta 	= 0.0;
+    dgemm_(&transA, &transB,
+            &this->nWires, &this->nWires, &this->nCoefs,
+            &alpha, this->drhs, &this->nCoefs,
+            this->dcoefs, &this->nCoefs,
+            &beta, this->dCmat, &this->nWires);
+
+    #ifdef CAPLET_TIMER
+    this->timeAfterSolving = MPI::Wtime();
+
+    this->fillingTime 	+= this->timeAfterFilling - this->timeStart;
+    this->solvingTime 	+= this->timeAfterSolving - this->timeAfterFilling;
+    this->totalTime		+= this->timeAfterSolving - this->timeStart;
+    #endif
+
+}
+
+//__________________________________________________________
 //*
 //* FAST GALERKIN MODE
-//*
 //*
 void Caplet::extractCGalerkin(){
 
@@ -773,15 +881,6 @@ void Caplet::extractCGalerkin(){
     }
     this->generateRHS();
 
-    #ifdef DEBUG_PRINT_P
-    std::cout << "Store system matrix in 'pmatrix' and rhs in 'rhs'" << std::endl;
-    ofstream fout("pmatrix");
-    print_matrix(this->P, this->nCoefs, this->nCoefs, "P", 'u', fout);
-    fout.close();
-    ofstream rhsout("rhs");
-    printRHS(rhsout);
-    rhsout.close();
-    #endif
 
     #ifdef CAPLET_TIMER
     this->timeAfterFilling = MPI::Wtime();;
@@ -790,7 +889,7 @@ void Caplet::extractCGalerkin(){
 
     //* Solve the system
     int  	info;
-    char uplo = 'u';
+    char 	uplo = 'u';
 
     //* Query optimal workspace size
     float*	work = new float[1];
@@ -862,6 +961,39 @@ void Caplet::generateGalerkinPMatrix(){
     delete[] ind;
 }
 
+void Caplet::generateGalerkinPMatrixDouble(){
+
+    double zero = 0.0;
+    int    inc  = 1;
+    int    nC   = nCoefs*nCoefs;
+    dscal_(&nC, &zero, dP, &inc);
+
+    //* Construct ind_vec from indexIncrements
+    int* ind = new int[nPanels];
+    ind[0] = 0;
+    for ( int i=1; i<nPanels; i++){
+        ind[i] = ind[i-1] + indexIncrements[i];
+    }
+    const int nK = nPanels*(nPanels+1)/2;
+
+    #ifdef CAPLET_OPENMP
+        #pragma omp parallel for num_threads(CAPLET_OPENMP_NUM_THREADS)
+    #endif
+    for ( int k=0; k < nK; k++ ){
+        int j = int((sqrt(double(1+8*k))-1)/2);
+        int i = k - j*(j+1)/2;
+
+        double result = calGalerkinPEntry(i,j);
+
+        if ( (i!=j) && (ind[i]==ind[j]) ){
+            dP[ ind[i] + nCoefs*ind[j] ] += result*2;
+        }else{
+            dP[ ind[i] + nCoefs*ind[j] ] += result;
+        }
+    }
+
+    delete[] ind;
+}
 
 //* Convert lower triangular matrix (column major) index k to subscript i,j
 inline void ltind2sub(int k, int& i, int& j){
@@ -988,6 +1120,127 @@ void Caplet::generateGalerkinPMatrixMPI(){
     delete[] ind;
 
 }
+void Caplet::generateGalerkinPMatrixDoubleMPI(){
+
+    int rank = MPI::COMM_WORLD.Get_rank();
+    int numproc = MPI::COMM_WORLD.Get_size();
+
+    int totalK = nPanels*(nPanels+1)/2;
+    int nK = totalK/numproc;
+
+    int* startK 	= new int[numproc];
+    int* lastK 		= new int[numproc];
+    int* startC		= new int[numproc];
+    int* lastC		= new int[numproc];
+
+    for( int i=0; i<numproc; i++ ){
+        startK[i] = i*nK;
+        lastK[i] = (i+1)*nK-1;
+    }
+    lastK[numproc-1] = totalK-1;
+
+    //* Construct ind_vec from indexIncrements
+    int* ind = new int[nPanels];
+    ind[0] = 0;
+    for ( int i=1; i<nPanels; i++){
+        ind[i] = ind[i-1] + indexIncrements[i];
+    }
+
+    int maxNC = -1;
+    for( int r=0; r<numproc; r++ ){
+        int i, startj, lastj;
+        ltind2sub(startK[r], i, startj);
+        ltind2sub(lastK[r], i,  lastj );
+        startC[r] = ind[startj];
+        lastC[r]  = ind[lastj];
+
+        int nC = lastC[r]-startC[r]+1;
+        if ( maxNC < nC ){
+            maxNC = nC;
+        }
+    }
+
+    double* ptrP;
+    double* tempP;
+    if ( rank==0 ){
+        //* init this->dP
+        double zero = 0.0;
+        int    inc  = 1;
+        int    nP   = nCoefs*nCoefs;
+        dscal_(&nP, &zero, dP, &inc);
+        //* init tempP to cover the largest number of columns among all proccesses.
+        int   nTempP = maxNC*nCoefs;
+        tempP= new double[nTempP];
+        ptrP = this->dP;
+    }else{
+        double zero = 0.0;
+        int    inc  	= 1;
+        int    nTempP= ( lastC[rank]-startC[rank]+1 )*nCoefs;
+        tempP= new double[ nTempP ];
+        dscal_(&nTempP, &zero, tempP, &inc);
+        ptrP = tempP;
+    }
+
+    //* For each k index
+    for ( int k = startK[rank] ; k <= lastK[rank] ; k++ ){
+        //* Convert k index to i,j subscript
+        int i,j;
+        ltind2sub(k, i, j);
+        //* Compute the P entry
+
+        double result = calGalerkinPEntry(i,j);
+
+        #ifdef DEBUG_DETECT_NAN_INF_ENTRY
+        #include <cmath>
+        if (isnan(result) || isinf(result)){
+        	cout << "Detect nan or inf: (" << i << "," << j << ") = " << result << endl;
+        	cout << "i: " 	<< panels[i][X][MIN] << ", " << panels[i][X][MAX] << ", " 
+        		 			<< panels[i][Y][MIN] << ", " << panels[i][Y][MAX] << ", " 
+        		 			<< panels[i][Z][MIN] << ", " << panels[i][Z][MAX] << ". Dir: "
+        		 			<< dirs[i] << ", " << basisDirs[i] << endl;
+        	cout << "j: " 	<< panels[j][X][MIN] << ", " << panels[j][X][MAX] << ", " 
+        					<< panels[j][Y][MIN] << ", " << panels[j][Y][MAX] << ", " 	
+        					<< panels[j][Z][MIN] << ", " << panels[j][Z][MAX] << ". Dir: "
+        					<< dirs[j] << ", " << basisDirs[j] << endl;
+        }
+        #endif
+
+
+        //* Combine rows or columns in place if consecutive panels
+        //  belong to the same basis function
+        if ( (i!=j) && (ind[i]==ind[j]) ){
+            ptrP[ ind[i] + nCoefs*(ind[j]-startC[rank]) ] += result*2;
+        }else{
+            ptrP[ ind[i] + nCoefs*(ind[j]-startC[rank]) ] += result;
+        }
+    }
+
+    //* Combine sub-matrices to rank0 node
+    if( rank==0 ){
+        MPI::Status status;
+        for ( int i=1; i<numproc; i++ ){
+            int copylen = (lastC[i]-startC[i]+1)*nCoefs;
+            MPI::COMM_WORLD.Recv(tempP, copylen, MPI::DOUBLE, i, 0, status);
+            double alpha = 1.0f;
+            int inc = 1;
+            ptrP = dP+(startC[i]*nCoefs);
+            daxpy_(&copylen, &alpha, tempP, &inc, ptrP, &inc);
+        }
+    }else{
+        int copylen = (lastC[rank]-startC[rank]+1)*nCoefs;
+        MPI::COMM_WORLD.Send(tempP, copylen, MPI::DOUBLE, 0, 0);
+    }
+
+
+    delete[] startK;
+    delete[] lastK;
+    delete[] startC;
+    delete[] lastC;
+    delete[] tempP;
+    delete[] ind;
+
+}
+
 
 
 float Caplet::calGalerkinPEntry(int panel1, int panel2){
@@ -1647,19 +1900,22 @@ float Caplet::compareCmatError(const std::string filename, ERROR_REF option) con
 
 
 
-//******************
+//__________________________________________________________
 //*
 //* PRINT UTILITIES
 //*
-//*
-void Caplet::printP(){
+void Caplet::printP(std::ostream &out){
     if ( this->isLoaded && this->isSolved ){
         switch(this->mode){
         case FAST_GALERKIN:
-            print_matrix(this->P, this->nCoefs, this->nCoefs, "P(float)");
+            print_matrix(this->P, this->nCoefs, this->nCoefs, "", 'u', out);
             break;
+        case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
-            print_matrix(this->dP, this->nCoefs, this->nCoefs, "P(double)");
+            print_matrix(this->dP, this->nCoefs, this->nCoefs, "", 'u', out);
+            cout << "here" << endl;
+            cout << dP[0] << ", " << dP[1] << endl;
+            out << "test" << endl;
             break;
         default:
             ;
@@ -1672,10 +1928,11 @@ void Caplet::printCoefs(){
     if ( this->isLoaded && this->isSolved ){
         switch(this->mode){
         case FAST_GALERKIN:
-            print_matrix(this->coefs, this->nCoefs, this->nWires, "coefs(float)");
+            print_matrix(this->coefs, this->nCoefs, this->nWires, "");
             break;
+        case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
-            print_matrix(this->dcoefs, this->nCoefs, this->nWires, "coefs(double)");
+            print_matrix(this->dcoefs, this->nCoefs, this->nWires, "");
             break;
         default:
             ;
@@ -1688,10 +1945,11 @@ void Caplet::printRHS(std::ostream &out){
     if ( this->isLoaded && this->isSolved ){
         switch(this->mode){
         case FAST_GALERKIN:
-            print_matrix(this->rhs, this->nCoefs, this->nWires, "rhs(float)", 'a', out);
+            print_matrix(this->rhs, this->nCoefs, this->nWires, "", 'a', out);
             break;
+        case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
-            print_matrix(this->drhs, this->nCoefs, this->nWires, "rhs(double)", 'a', out);
+            print_matrix(this->drhs, this->nCoefs, this->nWires, "", 'a', out);
             break;
         default:
             ;
@@ -1704,10 +1962,11 @@ void Caplet::printCmat(){
     if ( this->isLoaded && this->isSolved ){
         switch(this->mode){
         case FAST_GALERKIN:
-            print_matrix(this->Cmat, this->nWires, this->nWires, "Cmat(float)");
+            print_matrix(this->Cmat, this->nWires, this->nWires, "");
             break;
+        case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
-            print_matrix(this->dCmat, this->nWires, this->nWires, "Cmat(double)");
+            print_matrix(this->dCmat, this->nWires, this->nWires, "");
             break;
         default:
             ;
@@ -1733,10 +1992,9 @@ void Caplet::printPanel(int index){
 
 
 
-//******************
+//__________________________________________________________
 //*
 //* DEBUG UTILITIES
-//*
 //*
 bool Caplet::isPanelAspectRatioValid(){
     if ( this->isLoaded == false ){

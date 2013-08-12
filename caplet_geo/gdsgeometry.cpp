@@ -1,6 +1,5 @@
 /*
 CREATED : Jan 31, 2013
-MODIFIED: Feb 15, 2013
 AUTHOR  : Yu-Chung Hsiao
 EMAIL   : project.caplet@gmail.com
 
@@ -989,6 +988,22 @@ bool RectangleGL::operator ==(const RectangleGL &rect) const
             x1==rect.x1 && x2==rect.x2 && y1==rect.y1 && y2==rect.y2 && z1==rect.z1 && z2==rect.z2);
 }
 
+bool RectangleGL::isCoincidental(const RectangleGL &support, const float margin) const
+{
+    float xmargin = margin*(support.x2-support.x1);
+    float ymargin = margin*(support.y2-support.y1);
+
+    return (xn==support.xn && yn==support.yn && zn==support.zn &&
+
+            support.x1 <= x1 && x1 <= support.x1+xmargin &&
+            support.x2-xmargin <= x2 && x2 <= support.x2 &&
+
+            support.y1 <= y1 && y1 <= support.y1+ymargin &&
+            support.y2-ymargin <= y2 && y2 <= support.y2 &&
+
+            z1==support.z1 && z2==support.z2 );
+}
+
 //**
 //* isContaining
 //* - 3D
@@ -1395,9 +1410,9 @@ void RectangleGLList::mergeProjection()
 //* - If each contains what is after, then erase the latter one.
 //* - If only overlapping with the same boundaries, then merge (update *each and erase *after)
 //* - does not support sublayer
-void RectangleGLList::mergeProjection1_1()
+void RectangleGLList::mergeProjection1_1(const float projectionMergeDistance)
 {
-    const float zero = 1e-9;
+    const float zero = projectionMergeDistance;
     iterator first = this->begin();
 
     //* Find the first projection
@@ -1439,7 +1454,7 @@ void RectangleGLList::mergeProjection1_1()
 
             //* If overlapping but not containing with the same sign of direction
             //* and projected from the same distance
-            else if (each->z1 * after->z1 == 1){
+            else if (each->zn * after->zn == 1){
                 //* z-dir
                 if ( each->x1==after->x1 && each->x2==after->x2 &&
                      abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
@@ -1456,7 +1471,7 @@ void RectangleGLList::mergeProjection1_1()
                     flagEraseAfter = true;
                 }
             }
-            else if (each->x1 * after->x1 == 1){
+            else if (each->xn * after->xn == 1){
                 //* x-dir
                 if ( abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
                     each->y1 = min(each->y1, after->y1);
@@ -1464,7 +1479,7 @@ void RectangleGLList::mergeProjection1_1()
                     flagEraseAfter = true;
                 }
             }
-            else if (each->y1 * after->y1 == 1){
+            else if (each->yn * after->yn == 1){
                 //* y-dir
                 if ( abs(each->shapeNormalDistance-after->shapeNormalDistance)<zero ){
                     each->x1 = min(each->x1, after->x1);
@@ -1589,6 +1604,72 @@ void RectangleGLList::absorbCommonSupport(RectangleGLList::IteratorList &itList)
         }
     }
 }
+
+//* - Assume single signed direction
+//* - Combine all projections.
+//* - If the combined projection coincides the underlying rectangle,
+//*   remove the farthest projection and combine again.
+//* - Repeat until no bad projection.
+bool removeOneFarthestBadProjection(RectangleGLList &rectList,
+                                    const RectangleGLList::iterator lastSupportIt, const float margin);
+void RectangleGLList::removeBadProjection(float margin) {
+
+    //* Find the first projection
+    iterator lastSupportIt = this->begin();
+    for ( ; lastSupportIt!=end() && lastSupportIt->shapeShift==0; ++lastSupportIt){
+    }
+    if (lastSupportIt==end()){
+        return;
+    }
+    else{
+        --lastSupportIt;
+    }
+
+    while( removeOneFarthestBadProjection(*this, lastSupportIt, margin) ){
+        ;
+    }
+}
+
+bool removeOneFarthestBadProjection(RectangleGLList &rectList,
+                                    const RectangleGLList::iterator lastSupportIt, const float margin) {
+
+    RectangleGLList::iterator firstProjectionIt = lastSupportIt;
+    ++firstProjectionIt;
+
+    //* Make a copy of projections
+    RectangleGLList projectionList(firstProjectionIt, rectList.end());
+
+    //* Merge projections
+    projectionList.mergeProjection();
+
+    //* Check if any merged projection coincides underlying rectangles
+    for (RectangleGLList::iterator projectionIt=projectionList.begin();
+         projectionIt != projectionList.end(); ++projectionIt){
+        //* each copied projection
+        for (RectangleGLList::iterator supportIt=rectList.begin(); supportIt!=firstProjectionIt; ++supportIt) {
+            //* each underlying rectangle
+            if (projectionIt->isCoincidental(*supportIt, margin)) {
+                //* Smell bad projections
+                //* Search for the farthest projection component
+                float farthestDistance = 0;
+                RectangleGLList::iterator farthestProjectionIt;
+                for (RectangleGLList::iterator compIt=firstProjectionIt; compIt!=rectList.end(); ++compIt){
+                    if (projectionIt->isContaining(*compIt) &&
+                        compIt->shapeNormalDistance > farthestDistance ) {
+
+                        farthestDistance = compIt->shapeNormalDistance;
+                        farthestProjectionIt = compIt;
+                    }
+                }
+                //* Erase the farthest projection component
+                rectList.erase(farthestProjectionIt);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 //* Ver1.0 obsolete
 //void RectangleGLList::markCommonSupport()

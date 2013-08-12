@@ -390,6 +390,7 @@ public:
     bool isOverlappingOrEdgeNeighboring(const RectangleGL &rect) const;
     bool isEmpty() const;
     bool operator== (const RectangleGL &rect) const;
+    bool isCoincidental(const RectangleGL &rect, const float margin=0) const;
     bool isContaining(const RectangleGL &rect) const;
 
     //**
@@ -436,7 +437,8 @@ public:
     //* mergeProjection
     //* - self merge
     void mergeProjection();
-    void mergeProjection1_1();
+    RectangleGLList mergeProjectionReturn();
+    void mergeProjection1_1(const float projectionMergeDistance);
 
     //**
     //* insertOverlappingRectangleGL
@@ -448,6 +450,8 @@ public:
 
     void absorbCommonSupport();
     void absorbCommonSupport(IteratorList &itList);
+
+    void removeBadProjection(float margin);
 
     //* Ver1.0 obsolete
     //void markCommonSupport();
