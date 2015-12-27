@@ -5,10 +5,11 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"> <!--<![endif]-->
 <!--[if lte IE 8]>     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script> <![endif]-->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>CAPLET</title>
+    <title>CAPLET-Publications</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -39,12 +40,13 @@
             s.parentNode.insertBefore(g,s)}(document,'script'));
     </script>
 </head>
-<body>
-    <!--[if lt IE 7]>
-        <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-    <![endif]-->
 
-    <!-- Add your site or application content here -->
+<body>
+<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- Add your site or application content here -->
     <div id="center-column">
         <header id="banner" class="body">
             <div class="enclosure">
@@ -64,41 +66,34 @@
                 <a id="feature-tab" class='tab-link' href="feature.html">Features</a>
                 <a id="screenshot-tab" class='tab-link' href="screenshot.html">Screenshots</a>
                 <a id="download-tab" class='tab-link' href="download.html">Download</a>
-                <a id="installation-tab" class='tab-link' href="installation.html">Installation</a>
                 <a id="tutorial-tab" class='tab-link' href="tutorial.html">Tutorial</a>
+                <a id="publication-tab" class='tab-link' href="publication.html">Publications</a>
             </nav>
         </header>
 
-
         <div id="main" class="body">
-            <span id="index"></span>
-
-            <!--Home-->
+            <span id="publication"></span>
+            <!--Publication-->
             <section>
                 <div class="topbar"></div>
-                <p>
-                    <em class="section-title">CAPLET</em> is a capacitance extraction toolkit that computes <em>field-solver accurate</em> solutions using <em>ultra parallel efficient</em> algorithms.
-                </p>
-                <p>
-                    CAPLET directly handles GDS2 layout files and extracts capacitance matrices with both GUI and command line interfaces.
-                    The internal extraction algorithm is specialized for VLSI interconnect structures in Manhattan geometries and embedded in a uniform dielectric material.
-                </p>
+
+                <ul class="bib">
+                    <li>
+                        Yu-Chung Hsiao, El-Moselhy, T. and Daniel, L., <a href="publication/Hsiao_EPEPS2009.pdf">"Efficient capacitance solver for 3D interconnect based on template-instantiated basis functions,"</a> Electrical Performance of Electronic Packaging and Systems, 2009. EPEPS '09. IEEE 18th Conference on, pp.179-182, 19-21 Oct. 2009
+                    </li>
+                    <li>
+                        Yu-Chung Hsiao, <a href="http://dspace.mit.edu/handle/1721.1/62449">"FastCaplet : an efficient 3D capacitance extraction solver using instantiable basis functions for VLSI interconnects,"</a> M.S. thesis, Dept. of Electrical Engineering and Computer Science, Massachusetts Institute of Technology, Sept. 2010
+                    </li>
+                    <li>
+                        Yu-Chung Hsiao and Daniel, L., <a href="publication/Hsiao_DAC2011.pdf">"A highly scalable parallel boundary element method for capacitance extraction,"</a> Design Automation Conference (DAC), 2011 48th ACM/EDAC/IEEE , pp.552-557, 5-9 June 2011
+                    </li>
+                </ul>
+
                 <div class="bottombar"></div>
             </section>
 
-            <div id="homepic-container">
-                <img id="homepic" src="img/home.png" alt="3D Nand Gate"></img>
-            </div>
-
         </div>
-
-        <!--Footer-->
-        <footer id="footer">
-                Powered by jQuery, bxSlider.js, and markdown.js |
-                Copyright 2013 by Yu-Chung Hsiao |
-                All Rights Reserved | <span class="contact">project.caplet</span>
-        </footer>
-    </div>
+    </div>  
 </body>
 
 </html>

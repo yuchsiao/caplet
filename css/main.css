@@ -1,0 +1,875 @@
+/*
+ * HTML5 Boilerplate
+ *
+ * What follows is the result of much research on cross-browser styling.
+ * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
+ * Kroc Camen, and the H5BP dev community and team.
+ */
+
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+
+/*
+color template
+
+pink        : color: #E65CB8;
+red         : color: #E06666;
+cyan        : color: #00d0ea;
+dark cyan   : color: #00b7d1;
+orange      : color: #ea9a00;
+
+
+ */
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,500,700);
+@import url(http://fonts.googleapis.com/css?family=Lato:400,700,900);
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans:400,700);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700,600,800);
+@import url(http://fonts.googleapis.com/css?family=Cabin+Condensed:400,600,700);
+@import url(http://fonts.googleapis.com/css?family=Fauna+One);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
+@import url(http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700);
+@import url(http://fonts.googleapis.com/css?family=Monda:400,700);
+
+html,
+button,
+input,
+select,
+textarea {
+    color: #020445;
+}
+
+body {
+    font-size: 1em;
+    line-height: 1.4;
+    /*font-family: 'Trebuchet MS', Trebuchet, 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
+    min-height: 800px;
+}
+
+.body {
+    clear: both;
+    margin: 0 auto;
+    width: 800px;
+}
+
+/*Banner*/
+#banner {
+    margin: 0 auto;
+    padding: 2em 0 0 0;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+#banner h1 {
+    font-size: 2.3em;
+    line-height: 0.28em;
+}
+
+#banner div.enclosure {
+    /*float: right*/
+}
+
+#banner div.sub {
+    margin: 0.6em 0 0 1.0em;
+}
+
+#banner h1 a:link, #banner h1 a:visited {
+    font-size: 2em;
+    color: #00d0ea;
+    /*display: block;*/
+    font-weight: bold;
+    text-decoration: none;
+    /*width: 427px;*/
+    /*text-shadow: 0.3px 0.3px 0px  #595959;*/
+    text-shadow: 0.1px 0.2px 0.4px  #006A78;
+}
+#banner h1 a:hover, #banner h1 a:active {
+    background: none;
+    /*color: #ea9a00; orange*/
+    color: #E65CB8;
+    /*color: #E06666; red*/
+    text-shadow: 0.1px 0.2px 0.4px  #8A376E;
+    /*text-shadow: none;*/
+}
+
+#banner h1.sub {
+    font-style: italic;
+    font-family: Georgia;
+    font-size: 1.5em;
+    margin-top: 1.15em;
+    margin-left: 0.7em;
+
+    font-weight: bold;
+    /*text-shadow: 0.3px 0.3px 0px  #595959;*/
+    text-shadow: 0.1px 0.2px 0.1px  #595959;
+}
+
+#banner em{
+    color: #00d0ea;
+    font-size: 1.1em;
+    text-shadow: 0.1px 0.3px 0.3px  #006A78;
+}
+
+
+/*Nav*/
+#banner nav {
+    /*background: #525252;*/
+    font-family: 'Trebuchet MS' "Lucida Sans" sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    /*text-shadow: 0px 1px 0px #525252;*/
+    text-shadow: 0px 0.8px 0.2px #525252;
+    /*height: 18px;*/
+    /*line-height: 5px;*/
+    /*margin: 1.45em auto 2em auto;*/
+    /*padding: 0;*/
+    text-align: center;
+    width: 800px;
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+
+    position: relative;
+    bottom: 10px;
+}
+
+#banner div.colorbar {
+    background: #525252;
+    height: 20px;
+    width: 840px;
+    margin-left: -20px;
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+
+    position: relative;
+    top: 16px;
+    z-index: 1;
+}
+
+#banner nav ul {
+    list-style: none;
+    margin: 0 auto;
+    /*width: 800px;*/
+}
+
+#banner nav li div {
+    background-color: #00b7d1;
+    margin: 5px;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+
+    padding: 0px 5px;
+
+    box-shadow: 0px 0.7px 0.6px black inset;
+}
+
+
+#banner nav li {
+    float: left;
+    display: inline;
+
+    background-color: transparent;
+
+    text-align: center;
+
+    position: relative;
+    z-index: 2;
+}
+
+/*#banner nav a:hover, #banner nav a:active,
+#banner nav .active a:link, #banner nav .active a:visited {
+    color: #ea9a00;
+    text-shadow: 0px 1px 0px #525252;
+}
+*/
+/*#banner nav li:first-child a {
+    border-top-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -webkit-border-top-left-radius: 5px;
+
+    border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+}
+*/
+body{
+    background-color: #555555;
+    /*min-height: 800px;*/
+/*background-color: #222222;*/
+/*background-image: linear-gradient(90deg, rgba(255,255,255,.02) 50%, transparent 50%),
+linear-gradient(90deg, rgba(255,255,255,.03) 50%, transparent 50%),
+linear-gradient(90deg, transparent 50%, rgba(255,255,255,.017) 50%),
+linear-gradient(90deg, transparent 50%, rgba(255,255,255,.0019) 50%);
+background-size: 30px, 10px, 70px, 80px;
+*/}
+
+#center-column{
+    position: relative;
+    background-color: #FFFFFF;    
+    width: 880px;
+    min-height: 100%;
+    /*height: 2000px;*/
+    margin: auto;
+    box-shadow: 0.3px 0px 0.3px #888888 inset ;
+    padding-bottom: 5px;
+}
+
+#banner nav a {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+
+    background-color: #00b7d1;
+    margin-top: 5px;
+    padding: 6px 10px;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+
+    box-shadow: 0px 0.7px 0.6px black inset;
+
+    position: relative;
+    z-index: 2;
+}
+#banner nav a:link,
+#banner nav a:visited {
+    color: #ffffff;
+    display: inline-block;
+    text-decoration: none;
+}
+#banner nav a:hover{
+    background-color: #E65CB8;
+    /*background-color: #E06666; red*/ 
+}
+
+/*Main*/
+#main em{
+    color: #00b7d1;
+    /*font-size: 1.1em;*/
+    /*font-weight: bold;*/
+    /*text-shadow: 0.3px 0.3px 0px #494949;*/
+    text-shadow: 0.1px 0.2px 0.0px  #006A78;
+    font-style: normal;
+}
+
+#main em.section-title{
+    color: #00c0dc;
+    font-size: 1.3em;
+    font-weight: bold;
+    /*text-shadow: 0.3px 0.3px 0px  #595959;*/
+    text-shadow: 0.1px 0.2px 0.1px  #006A78;
+    font-style: normal;
+}
+
+#main div.text {
+    background-color: #00b7d1;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+/*Title*/
+#main div.title {
+    width: 800px;
+    position: relative;
+    background-color: transparent;
+    margin-bottom: 30px;
+}
+
+#main div.title div.text {
+    position: relative;
+    z-index: 2;
+    float: left;
+
+    padding: 4px 11px;
+    margin-left: 15px;
+
+    color: #ffffff;
+    text-shadow: 0px 1px 0px #525252;
+
+    font-weight: bold;
+    width: auto;
+
+    box-shadow: 1px 1px 1px black inset;
+}
+
+#main section div.topbar {
+    background: #f3f3f3;
+    height: 6px;
+    width: 800px;
+    /*left:  10px;*/
+    box-shadow: 0px -1px 0px 0px #b5b5b5;
+
+    border-radius: 5px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+
+    /*box-shadow: 0px 1px 1px black inset;*/
+    position: relative;
+    /*top: 10px;*/
+    /*bottom: 16px;*/
+    z-index: 1;
+}
+
+
+#main section div.bottombar {
+    /*background: #525252;*/
+    background: #f3f3f3;
+    height: 6px;
+    width: 800px;
+    /*left:  10px;*/
+    box-shadow: 0px 1.2px 0px 0px #777777;
+
+    border-radius: 5px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+
+    /*box-shadow: 0px 1px 1px black inset;*/
+    position: relative;
+    /*top: 18px;*/
+    /*bottom: 10px;*/
+    z-index: 1;
+}
+
+
+#main div.title a:hover,
+#main div.title a:active,
+#main .active a:link,
+#main .active a:visited {
+    color: #ffffff;
+}
+
+
+#main section{
+    background: #f3f3f3;
+
+    position: relative;
+
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+
+    top: -13px;
+    margin-bottom: 23px;
+    /*bottom: 20px;*/
+}
+
+/* paragraph */
+#main p {
+    margin: 12px 15px;
+    padding: 0px 10px 3px 10px;
+
+    /*background: #fff9d9;*/
+    /*background: #fff7eb;*/
+    /*background: #ea9a00;*/
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+#main a:link, #main a:visited {
+    color: #00b7d1;
+    text-decoration: none;
+
+}
+
+
+/*#main a:hover,
+#main  a:active,
+#main .active a:link,
+#main .active a:visited {
+    color: #ea9a00;
+}
+*/
+
+/*Features*/
+#main ul.bullet {
+    margin: 15px 15px;
+    /*padding: 10px;*/
+    /*padding-top: 10px;*/
+    padding-left: 26px;
+    list-style-type: disc;
+    position: relative;
+    bottom: 2px;
+}
+
+/*Screenshots*/
+#main div.pic_collection{
+    background: #d8d8d8;
+    margin: 15px;
+    padding: 8px;
+
+    position: relative;
+    bottom: 15px;
+}
+#main div.pic {
+    display: inline-block;
+    padding: 4px;
+    width: 48.6%;
+    margin: 4px auto;
+    background: #bcbcbc;
+    text-align: center;
+
+    /*float: left;*/
+}
+
+/*News*/
+#main table.news {
+    position: relative;
+    /*bottom: 14px;*/
+    left: 5px;
+    top: 8px;
+    /*bottom: 10px;*/
+    /*padding: 27px;*/
+    /*margin: 52px 20px;*/
+    margin: 10px 20px;
+}
+#main table.news td {
+    padding-right: 20px;
+    vertical-align: top;
+}
+#main table.news td.filler {
+    color: transparent;
+}
+#main table.news tr {
+    /*border: 0;*/
+    /*padding: 0;*/
+    margin: 50px;
+}
+/*#main table.news ul {*/
+    /*padding-left: 20px;*/
+    /*margin: 0;*/
+/*}*/
+
+
+/*Publications*/
+#main ul.bib {
+    margin: 15px 15px;
+    padding: 10px;
+    list-style: none;
+
+    /*background: #fff9d9;*/
+    /*background: #fff7eb;*/
+    /*background: #ea9a00;*/
+    /*border-radius: 3px;*/
+    /*-moz-border-radius: 3px;*/
+    /*-webkit-border-radius: 3px;*/
+}
+
+#main ul.bib li {
+    /*float: left;*/
+    /*display: block;*/
+    padding-left: 25px;
+    text-indent: -25px;
+    /*padding-left: -50px;*/
+}
+
+
+/* Home */
+#main img#homepic{
+    display: block;
+    width: 640px;
+    /*padding: 0px 120px;*/
+
+    margin: auto;
+}
+
+#main div#homepic-container{
+    background-color: #ffffff;
+    display: block;
+    width: 800px;
+    margin: auto;
+    /*padding: 0px 120px;*/
+
+}
+
+
+
+#footer {
+    /*margin: 0px;*/
+    /*top: -20px;*/
+    /*top: 20px;*/
+    margin: 10px 20px;
+    text-align: center;
+    /*font-size: 0.7em;*/
+    font-size: 10px;
+    /*color: #dddddd;*/
+    color: #999999;
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+    /*font-family: Perpetua, Baskerville, "Big Caslon", "Palatino Linotype", Palatino, "URW Palladio L", "Nimbus Roman No9 L", serif;*/
+
+    position: absolute;
+    bottom: 0;
+    height: 10px;
+}
+
+span.contact:after {
+    content: "\40gmail.com";
+}
+
+/*pre.download code{
+    position: relative;
+    top: -30px;
+    margin-top: -30px;
+    margin-bottom: -20px;
+}
+
+code {
+    position: relative;
+    font-family: monospace;
+    font-size: 1.3em;
+}*/
+
+#main section h4 {
+    font-size: 1.1em;
+    margin: 12px 15px;
+    padding: 0px 10px 3px 10px;
+
+    color: #00c0dc;
+    /*font-weight: bold;*/
+    /*text-shadow: 0.3px 0.3px 0px  #595959;*/
+    text-shadow: 0.1px 0.2px 0.1px  #006A78;
+    /*text-shadow: 0.1px 0.2px 0.1px  #ffffff;*/
+}
+
+#main section p code{
+    font-family: monospace;
+    font-size: 1.2em;
+    color: #333333;
+    background-color: #FCEFF8;
+    border: solid 0.5px #FADEF1;
+    padding: 0px 3px;
+}
+
+#main section strong{
+    color: #444444;
+    font-weight: bold;
+}
+
+#main section pre{
+    border: solid 0.5px #FADEF1;
+    background-color: #FCEFF8;
+    margin: 12px 25px;
+    padding: 3px 20px 3px 20px;
+
+}
+
+#main section pre code{
+    font-family: monospace;
+    font-size: 1.2em;
+    color: #333333;
+}
+
+#main section {
+    font-family: 'Droid Sans' sans-serif;
+    font-weight: 400;
+
+}
+
+#news-markdown {
+    padding-left: 121px;
+    text-indent: -121px;
+}
+
+
+/*
+ * Remove text-shadow in selection highlight: h5bp.com/i
+ * These selection declarations have to be separate.
+ * Customize the background color to match your design.
+ */
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+/*
+ * A better looking default horizontal rule
+ */
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+/*
+ * Remove the gap between images and the bottom of their containers: h5bp.com/i/440
+ */
+
+div.pic_collection img {
+    vertical-align: middle;
+    width: 98%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+ul.bxslider {
+    background-color: #F3F3F3;
+}
+
+ul.bxslider img {
+    width: 700px;
+    /*margin-left: 25px;*/
+    /*margin-right: 50px;*/
+    /*margin-bottom: 30px;*/
+    margin: auto;
+    padding: 0 10px 0 10px;
+    display: inline;
+}
+
+/*
+ * Remove default fieldset styles.
+ */
+
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/*
+ * Allow only vertical resizing of textareas.
+ */
+
+textarea {
+    resize: vertical;
+}
+
+/* ==========================================================================
+   Chrome Frame prompt
+   ========================================================================== */
+
+.chromeframe {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+/*
+ * Image replacement
+ */
+
+.ir {
+    background-color: transparent;
+    border: 0;
+    overflow: hidden;
+    /* IE 6/7 fallback */
+    *text-indent: -9999px;
+}
+
+.ir:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 150%;
+}
+
+/*
+ * Hide from both screenreaders and browsers: h5bp.com/u
+ */
+
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+
+.invisible {
+    visibility: hidden;
+}
+
+/*
+ * Clearfix: contain floats
+ *
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    `contenteditable` attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that receive the `clearfix` class.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/*
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+
+.clearfix {
+    *zoom: 1;
+}
+
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   Theses examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}

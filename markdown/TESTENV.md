@@ -1,0 +1,6 @@
+- **platform:** lmde-64bit (linux mint debian edition), mint15-64bit (ubuntu13.04), ubuntu12.04-64bit, ubuntu10.04-64bit
+- **g++:** 4.7.3, 4.4.3
+- **python:** 2.7.4, 2.6.5 
+- **Qt:** 5.1.0, 5.0.2, 4.8.5, 4.7.4, 4.6.4, 4.5.3, 4.4.3, 4.3.5 (not compatible)
+- **OpenMPI:** 1.4.5, 1.4.1
+- **python-gdsii:** 0.2.1

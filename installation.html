@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>CAPLET</title>
+    <title>CAPLET-Tutorial</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -39,6 +39,7 @@
             s.parentNode.insertBefore(g,s)}(document,'script'));
     </script>
 </head>
+
 <body>
     <!--[if lt IE 7]>
         <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
@@ -59,45 +60,60 @@
             </div>
             <nav>
                 <div class="colorbar"></div>
-                <a id="index-tab" class='tab-link' href="index.html">Home</a>
+                <a class='tab-link' href="index.html">Home</a>
                 <a id="news-tab" class='tab-link' href="news.html">News</a>
                 <a id="feature-tab" class='tab-link' href="feature.html">Features</a>
                 <a id="screenshot-tab" class='tab-link' href="screenshot.html">Screenshots</a>
                 <a id="download-tab" class='tab-link' href="download.html">Download</a>
-                <a id="installation-tab" class='tab-link' href="installation.html">Installation</a>
+                <a id="install-tab" class='tab-link' href="install.html">Installation</a>
                 <a id="tutorial-tab" class='tab-link' href="tutorial.html">Tutorial</a>
+                <a id="publication-tab" class='tab-link' href="publication.html">Publications</a>
             </nav>
         </header>
 
 
         <div id="main" class="body">
-            <span id="index"></span>
+            <span id="installation"></span>
 
-            <!--Home-->
+            <!--Requirement-->
             <section>
                 <div class="topbar"></div>
-                <p>
-                    <em class="section-title">CAPLET</em> is a capacitance extraction toolkit that computes <em>field-solver accurate</em> solutions using <em>ultra parallel efficient</em> algorithms.
-                </p>
-                <p>
-                    CAPLET directly handles GDS2 layout files and extracts capacitance matrices with both GUI and command line interfaces.
-                    The internal extraction algorithm is specialized for VLSI interconnect structures in Manhattan geometries and embedded in a uniform dielectric material.
-                </p>
+
+                <p><em class="section-title">Requirements</em></p>
+                <div id="requirement-markdown"></div>
+
                 <div class="bottombar"></div>
             </section>
 
-            <div id="homepic-container">
-                <img id="homepic" src="img/home.png" alt="3D Nand Gate"></img>
-            </div>
+            <!--Installation-->
+            <section>
+                <div class="topbar"></div>
+
+                <p><em class="section-title">Installation</em></p>
+                <div id="installation-markdown"></div>
+
+                <div class="bottombar"></div>
+            </section>
+
+            <!--Tested Environments-->
+            <section>
+                <div class="topbar"></div>
+
+                <p><em class="section-title">Tested Environments</em></p>
+                <div id="testenv-markdown"></div>
+
+                <div class="bottombar"></div>
+            </section>
 
         </div>
 
         <!--Footer-->
         <footer id="footer">
-                Powered by jQuery, bxSlider.js, and markdown.js |
+                Powered by bxSlider and jQuery |
                 Copyright 2013 by Yu-Chung Hsiao |
                 All Rights Reserved | <span class="contact">project.caplet</span>
         </footer>
+
     </div>
 </body>
 
