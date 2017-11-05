@@ -1,7 +1,7 @@
 CXX     = g++
 MPICXX  = mpic++
 LIB     = -lmpi -lpthread -lgfortran -llapack -lblas
-FLAG    = -Wall -I$(INCLUDE) -O2
+FLAG    = -Wall -I$(INCLUDE) -O2 -fpermissive
 DEF_OPENMP = -fopenmp -DCAPLET_OPENMP
 DEF_MPI = -DCAPLET_MPI
 
