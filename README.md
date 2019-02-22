@@ -8,7 +8,7 @@
 - Extracts parasitic capacitance matrices in a parallel manner 
 - Provides field-solver accurate solutions
 
-**If you find this software useful in your personal or commercial purpose, please encourage the author by mentioning your project at <project.caplet@gmail.com>.**
+**If you find this software useful in your personal or commercial purpose, please encourage the author of this work by mentioning your project to <project.caplet@gmail.com>.**
 
 
 Features
@@ -24,7 +24,7 @@ Features
 
 Screenshots
 -----------
-![GUI](http://www.mit.edu/~yuchsiao/caplet/img/gui_piecewise_constant_basis_function.png "GUI and Piecewise constant basis functions")
+![GUI](http://www.feature.space/caplet/img/gui_color_by_layer.png "GUI and Piecewise constant basis functions")
 
 
 License
