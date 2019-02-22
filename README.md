@@ -37,21 +37,21 @@ Caplet is distributed in the hope that it will be useful, but WITHOUT ANY WARRAN
 Requirements
 ------------
 
-####General
+#### General
 
 - gcc 4.4 or higher
 
-####`caplet_gds2geo`
+#### `caplet_gds2geo`
 
 - Python 2.6 or higher
 - [GDSII for Python](http://gdspy.sourceforge.net/): automatically downloaded with `install.sh`
 
-####`caplet_geo`
+#### `caplet_geo`
 
 - Qt 4.4 or higher
 - OpenGL
 
-####`caplet_solver`
+#### `caplet_solver`
 
 - openmpi, openmp
 - gfortran, lapack, blas
@@ -87,10 +87,10 @@ Tested Environments
 Quickstarts
 -----------
 
-####`caplet`
+#### `caplet`
 `caplet` consists of three parts: `caplet_gds2geo`, `caplet_geo`, and `caplet_solver`, each of which, respectively, processes layout `.gds` files into geometry `.geo` files, generates basis function files `.qui` or `.caplet`, and extracts and prints performance and capacitance matrices on screen. Each program takes the output file of the previous stage as input.
 
-####`caplelt_gds2geo`
+#### `caplelt_gds2geo`
 `caplet_gds2geo` transforms binary GDSii layout files into ascii geometry definitions, including squares and polygons. The generated geometry files end with `.geo` extension. This program needs an additional file to specify the elevation of each metal layer and connection relationship between layers and vias. The usage is as the following:
 
 ```
@@ -103,7 +103,7 @@ python caplet_gds2geo.py -l LAYER_FILE GDS2_FILE
 python caplet_gds2geo.py -l sample.tech cap_inverter.gds
 ```
  
-####`caplet_geo`
+#### `caplet_geo`
 `caplet_geo` decomposes 2D polygons into non-overlapping 3D rectangles, and generate piecewise constant (PWC) basis functions or instantiable basis functions of your choice. The usage should be straightforward: open a .geo file, select the type of basis function type and parameters for your purpose, and click on **Extract** to extract the capacitance matrix using `caplet_solver`. `caplet_geo` also provides iterative schemes for calculating the finely discreted PWC reference capacitance matrices for accuracy comparison.
 
 Similar to `caplet_geo`, The Command Line Interface (CLI) version `caplet_geo_cli` also generates either type of basis functions but does not provide visualization. The command line usage is the following:
@@ -264,16 +264,16 @@ More information can be found in [FASTCAP](http://www.rle.mit.edu/cpg/research_c
 Limitation
 ----------
 
-####`caplet_gds2geo`
+#### `caplet_gds2geo`
 
 - GDS files are assumed flattened.
 
-####`caplet_geo`
+#### `caplet_geo`
 
 - Metal layers and vias are disjoint in the vertical direction.
 - Sublayers are not taken into account.
 
-####`caplet_solver`
+#### `caplet_solver`
 
 - Relative dielectric constant is fixed to be 1.
 - Dielectric material is assumed to be uniform.
