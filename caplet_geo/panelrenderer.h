@@ -42,9 +42,9 @@ class PanelRenderer : public QGLWidget
     Q_OBJECT
 
 public:
-	PanelRenderer( QWidget* parent = 0);
+    PanelRenderer( QWidget* parent = 0);
     ~PanelRenderer();
-	void keyPressEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent * event);
     void loadGLRects( const ConductorFPList *condFPListPtr);
     void initView();
 
@@ -63,12 +63,12 @@ public slots:
 
 
 protected:
-	void initializeGL();
-	void resizeGL(int width, int height);
-	void paintGL();
+    void initializeGL();
+    void resizeGL(int width, int height);
+    void paintGL();
 
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 
 private:
@@ -87,29 +87,29 @@ private:
 
     float	(**panelArray)[12];
     float	(**normalArray)[3];
-	int		nPanels;
-	bool	isLoaded;
-	float	axis[6];
-	float	xc;
-	float	yc;
-	float	zc;
-	float	xr;
-	float	yr;
-	float	zr;
-	float	maxr;
+    int		nPanels;
+    bool	isLoaded;
+    float	axis[6];
+    float	xc;
+    float	yc;
+    float	zc;
+    float	xr;
+    float	yr;
+    float	zr;
+    float	maxr;
 
-	QPoint lastPos;
+    QPoint lastPos;
 
-	GLfloat rotationX;
-	GLfloat rotationY;
-	GLfloat rotationZ;
-	GLfloat translationX;
-	GLfloat translationY;
+    GLfloat rotationX;
+    GLfloat rotationY;
+    GLfloat rotationZ;
+    GLfloat translationX;
+    GLfloat translationY;
     GLfloat translationZ;
-	QRadialGradient gradient;
-	int		mouseMode;
-	int		mouseAxis;
-	float	scale;
+    QRadialGradient gradient;
+    int		mouseMode;
+    int		mouseAxis;
+    float	scale;
     float	outlineWidth;
 
     bool    outline;

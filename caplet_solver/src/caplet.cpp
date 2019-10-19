@@ -69,7 +69,7 @@ Caplet::~Caplet(){
 
 void Caplet::clear(){
     if ( this->isLoaded == true){
-	    this->isLoaded = false;
+        this->isLoaded = false;
         this->isInstantiable = false;
 
         delete[] this->nWirePanels;
@@ -85,8 +85,8 @@ void Caplet::clear(){
         delete[] this->basisZs;
         delete[] this->basisShifts;
 
-		if ( this->isSolved == true ){
-			this->isSolved = false;
+        if ( this->isSolved == true ){
+            this->isSolved = false;
 
             //* single precision version
             switch(this->mode){
@@ -109,7 +109,7 @@ void Caplet::clear(){
                 ;
             }
         }
-	}
+    }
     this->isInstantiable = false;
 }
 
@@ -128,18 +128,18 @@ void Caplet::clear(){
 void Caplet::loadFastcapFile(const std::string filename){
 
     //* Clean up
-	this->clear();
+    this->clear();
 
     ifstream ifile(filename.c_str());
     //* Check if open successfully
-	if (!ifile){
+    if (!ifile){
         cerr << "ERROR: Cannot open the file: " << filename << endl;
-		return;
-	}
+        return;
+    }
     
     //* Initialize
-	this->nPanels = 0;
-	this->nWires = 0;
+    this->nPanels = 0;
+    this->nWires = 0;
 
     string		stringTemp;
     string		lineTemp;
@@ -148,11 +148,11 @@ void Caplet::loadFastcapFile(const std::string filename){
     list<int>	nWirePanelsList;
     int			nWirePanelTemp = 0;
 
-	float xCoord[4];
-	float yCoord[4];
-	float zCoord[4];
+    float xCoord[4];
+    float yCoord[4];
+    float zCoord[4];
 
-	float xmin, xmax, ymin, ymax, zmin, zmax;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
 
     list<float> x1;
     list<float> x2;
@@ -162,147 +162,147 @@ void Caplet::loadFastcapFile(const std::string filename){
     list<float> z2;
 
     //* skip the first line
-	getline(ifile, lineTemp);
+    getline(ifile, lineTemp);
 
-	while( getline(ifile, lineTemp) ){
-		nWirePanelTemp++;
-		this->nPanels++;
+    while( getline(ifile, lineTemp) ){
+        nWirePanelTemp++;
+        this->nPanels++;
 
-		std::stringstream	stringTokenizer(lineTemp);
+        std::stringstream	stringTokenizer(lineTemp);
 
-		stringTokenizer >> charTemp;
-		if (charTemp != 'Q'){
+        stringTokenizer >> charTemp;
+        if (charTemp != 'Q'){
             cerr << "ERROR: only 'Q' is allowed in this solver!" << endl;
-		}
+        }
 
-		stringTokenizer >> stringTemp;
+        stringTokenizer >> stringTemp;
 
-		stringTokenizer >> xCoord[0]
-						>> yCoord[0]
-						>> zCoord[0]
+        stringTokenizer >> xCoord[0]
+                        >> yCoord[0]
+                        >> zCoord[0]
 
-						>> xCoord[1]
-						>> yCoord[1]
-						>> zCoord[1]
+                        >> xCoord[1]
+                        >> yCoord[1]
+                        >> zCoord[1]
 
-						>> xCoord[2]
-						>> yCoord[2]
-						>> zCoord[2]
+                        >> xCoord[2]
+                        >> yCoord[2]
+                        >> zCoord[2]
 
-						>> xCoord[3]
-						>> yCoord[3]
-						>> zCoord[3];
+                        >> xCoord[3]
+                        >> yCoord[3]
+                        >> zCoord[3];
 
-		xmin = xCoord[0];
-		xmax = xCoord[0];
-		ymin = yCoord[0];
-		ymax = yCoord[0];
-		zmin = zCoord[0];
-		zmax = zCoord[0];
+        xmin = xCoord[0];
+        xmax = xCoord[0];
+        ymin = yCoord[0];
+        ymax = yCoord[0];
+        zmin = zCoord[0];
+        zmax = zCoord[0];
 
-		for (int i=1; i<4; i++){
-			if ( xmin > xCoord[i] ) xmin = xCoord[i];
-			if ( xmax < xCoord[i] ) xmax = xCoord[i];
-			if ( ymin > yCoord[i] ) ymin = yCoord[i];
-			if ( ymax < yCoord[i] ) ymax = yCoord[i];
-			if ( zmin > zCoord[i] ) zmin = zCoord[i];
-			if ( zmax < zCoord[i] ) zmax = zCoord[i];
-		}
+        for (int i=1; i<4; i++){
+            if ( xmin > xCoord[i] ) xmin = xCoord[i];
+            if ( xmax < xCoord[i] ) xmax = xCoord[i];
+            if ( ymin > yCoord[i] ) ymin = yCoord[i];
+            if ( ymax < yCoord[i] ) ymax = yCoord[i];
+            if ( zmin > zCoord[i] ) zmin = zCoord[i];
+            if ( zmax < zCoord[i] ) zmax = zCoord[i];
+        }
 
-		x1.push_back(xmin);
-		x2.push_back(xmax);
-		y1.push_back(ymin);
-		y2.push_back(ymax);
-		z1.push_back(zmin);
-		z2.push_back(zmax);
+        x1.push_back(xmin);
+        x2.push_back(xmax);
+        y1.push_back(ymin);
+        y2.push_back(ymax);
+        z1.push_back(zmin);
+        z2.push_back(zmax);
 
-		if ( currentConductorName.compare(stringTemp) != 0 ){ // is different
+        if ( currentConductorName.compare(stringTemp) != 0 ){ // is different
             //* change to another conductor
-			currentConductorName = stringTemp;
-			this->nWires++;
-			nWirePanelsList.push_back(nWirePanelTemp);
-			nWirePanelTemp = 0;
-		}
-	}
+            currentConductorName = stringTemp;
+            this->nWires++;
+            nWirePanelsList.push_back(nWirePanelTemp);
+            nWirePanelTemp = 0;
+        }
+    }
     //* Register the last wire information
-	nWirePanelsList.push_back(++nWirePanelTemp);
+    nWirePanelsList.push_back(++nWirePanelTemp);
 
     //* Collect all information from the .caplet file until here
     //  fill in and allocate each array and field below
 
-	this->nCoefs = this->nPanels;
+    this->nCoefs = this->nPanels;
 
     //* Convert nWirePanelsList to the nWirePanels array
-	this->nWirePanels = new int[this->nWires];
-	this->nWireCoefs  = new int[this->nWires];
-	int i=0;
-	for ( std::list<int>::iterator it = ++nWirePanelsList.begin();
-			it != nWirePanelsList.end(); ++it){
-		this->nWirePanels[i] = *it;
-		this->nWireCoefs [i] = *it;
-		i++;
-	}
+    this->nWirePanels = new int[this->nWires];
+    this->nWireCoefs  = new int[this->nWires];
+    int i=0;
+    for ( std::list<int>::iterator it = ++nWirePanelsList.begin();
+            it != nWirePanelsList.end(); ++it){
+        this->nWirePanels[i] = *it;
+        this->nWireCoefs [i] = *it;
+        i++;
+    }
 
-	this->panels 	= new float	[this->nPanels][3][4];
-	this->dirs 		= new int	[this->nPanels];
-	this->areas		= new float	[this->nPanels];
-	for ( int i=0; i<this->nPanels; i++){
-		this->panels[i][X][MIN] = x1.front(); x1.pop_front();
-		this->panels[i][X][MAX] = x2.front(); x2.pop_front();
-		this->panels[i][X][LENGTH]
-			   = this->panels[i][X][MAX] - this->panels[i][X][MIN];
-		this->panels[i][X][CENTER]
-			   = (this->panels[i][X][MAX] + this->panels[i][X][MIN])/2;
+    this->panels 	= new float	[this->nPanels][3][4];
+    this->dirs 		= new int	[this->nPanels];
+    this->areas		= new float	[this->nPanels];
+    for ( int i=0; i<this->nPanels; i++){
+        this->panels[i][X][MIN] = x1.front(); x1.pop_front();
+        this->panels[i][X][MAX] = x2.front(); x2.pop_front();
+        this->panels[i][X][LENGTH]
+               = this->panels[i][X][MAX] - this->panels[i][X][MIN];
+        this->panels[i][X][CENTER]
+               = (this->panels[i][X][MAX] + this->panels[i][X][MIN])/2;
 
-		this->panels[i][Y][MIN] = y1.front(); y1.pop_front();
-		this->panels[i][Y][MAX] = y2.front(); y2.pop_front();
-		this->panels[i][Y][LENGTH]
-			   = this->panels[i][Y][MAX] - this->panels[i][Y][MIN];
-		this->panels[i][Y][CENTER]
-			   = (this->panels[i][Y][MAX] + this->panels[i][Y][MIN])/2;
+        this->panels[i][Y][MIN] = y1.front(); y1.pop_front();
+        this->panels[i][Y][MAX] = y2.front(); y2.pop_front();
+        this->panels[i][Y][LENGTH]
+               = this->panels[i][Y][MAX] - this->panels[i][Y][MIN];
+        this->panels[i][Y][CENTER]
+               = (this->panels[i][Y][MAX] + this->panels[i][Y][MIN])/2;
 
-		this->panels[i][Z][MIN] = z1.front(); z1.pop_front();
-		this->panels[i][Z][MAX] = z2.front(); z2.pop_front();
-		this->panels[i][Z][LENGTH]
-			   = this->panels[i][Z][MAX] - this->panels[i][Z][MIN];
-		this->panels[i][Z][CENTER]
-			   = (this->panels[i][Z][MAX] + this->panels[i][Z][MIN])/2;
+        this->panels[i][Z][MIN] = z1.front(); z1.pop_front();
+        this->panels[i][Z][MAX] = z2.front(); z2.pop_front();
+        this->panels[i][Z][LENGTH]
+               = this->panels[i][Z][MAX] - this->panels[i][Z][MIN];
+        this->panels[i][Z][CENTER]
+               = (this->panels[i][Z][MAX] + this->panels[i][Z][MIN])/2;
 
-		if ( std::abs(this->panels[i][X][LENGTH]) < zero ){ // in x-dir
-			this->dirs[i] = X;
-			this->areas[i] = this->panels[i][Y][LENGTH] * this->panels[i][Z][LENGTH];
-		}else if ( std::abs(this->panels[i][Y][LENGTH]) < zero ){ // in y-dir
-			this->dirs[i] = Y;
-			this->areas[i] = this->panels[i][Z][LENGTH] * this->panels[i][X][LENGTH];
-		}else{ // in z-dir
-			this->dirs[i] = Z;
-			this->areas[i] = this->panels[i][X][LENGTH] * this->panels[i][Y][LENGTH];
-		}
+        if ( std::abs(this->panels[i][X][LENGTH]) < zero ){ // in x-dir
+            this->dirs[i] = X;
+            this->areas[i] = this->panels[i][Y][LENGTH] * this->panels[i][Z][LENGTH];
+        }else if ( std::abs(this->panels[i][Y][LENGTH]) < zero ){ // in y-dir
+            this->dirs[i] = Y;
+            this->areas[i] = this->panels[i][Z][LENGTH] * this->panels[i][X][LENGTH];
+        }else{ // in z-dir
+            this->dirs[i] = Z;
+            this->areas[i] = this->panels[i][X][LENGTH] * this->panels[i][Y][LENGTH];
+        }
 
-	}
+    }
 
     //* For a uniform treatment of generateRHS
-	this->indexIncrements 	= new int[this->nPanels];
-	this->basisTypes		= new char[this->nPanels];
-	for (int i=0; i<this->nPanels; i++){
-		this->indexIncrements[i] = 1;
-		this->basisTypes[i] = 'F';
-	}
+    this->indexIncrements 	= new int[this->nPanels];
+    this->basisTypes		= new char[this->nPanels];
+    for (int i=0; i<this->nPanels; i++){
+        this->indexIncrements[i] = 1;
+        this->basisTypes[i] = 'F';
+    }
 
 
     //* Allocate dummy array for a uniform clear operation
-	this->basisDirs			= new int[this->nPanels];
-	for ( int i=0; i< this->nPanels; i++ ){
-		this->basisDirs[i] = FLAT;
-	}
-	this->basisZs			= new float[1];
-	this->basisShifts		= new float[1];
+    this->basisDirs			= new int[this->nPanels];
+    for ( int i=0; i< this->nPanels; i++ ){
+        this->basisDirs[i] = FLAT;
+    }
+    this->basisZs			= new float[1];
+    this->basisShifts		= new float[1];
 
     //* Set flags
-	this->isSolved = false;
-	this->isLoaded = true;
+    this->isSolved = false;
+    this->isLoaded = true;
 
-	ifile.close();
+    ifile.close();
 
     #ifdef DEBUG_ASPECT_RATIO_VALIDITY
     if( this->isPanelAspectRatioValid() == false ){
@@ -316,119 +316,119 @@ void Caplet::loadFastcapFile(const std::string filename){
 
 void Caplet::loadCapletFile(const std::string filename){
     //* Caplet format
-	//* Line 1: nWire
-	//* Line 2: nShape for each wire
-	//* Line 3: nTotalShape
+    //* Line 1: nWire
+    //* Line 2: nShape for each wire
+    //* Line 3: nTotalShape
     //* Line n: shape description lines, 12 numbers per line
-	//* shapeType, indexIncrement, XL, XU, YL, YU, ZL, ZU, dir, shapeDir, shapeNormalDistance, shapeShift
-	//* shapeType: either F for Flat, A for Arch, and S for Side arch
-	//* indexIncrement: 
-	//*   a basis function can consists of multiple shapes. The value here can be 0 or 1.
-	//*   1: the beginning of a new basis function
-	//*   0: not increment, meaning the current shape is combined with the shape before with value 1
-	//* XL, XU, YL, YU, ZL, ZU: the range limit of each direction
-	//* dir: normal direction of the rectangle that supports the shape
-	//*   0 for x-dir, 1 for y-dir, 2 for z-dir
-	//* shapeDir: shape varying direction
-	//*   0 for x-dir, 1 for y-dir, 2 for z-dir
-	//* shapeNormalDistrance: signed distance between the support rectangle and the neighborhoold rectangle
-	//*   positive: decaying in the positive direction
-	//*   negative: decaying in the negative direction
-	//* shapeShift: shift parameter that indicates the shift of starting point of 
+    //* shapeType, indexIncrement, XL, XU, YL, YU, ZL, ZU, dir, shapeDir, shapeNormalDistance, shapeShift
+    //* shapeType: either F for Flat, A for Arch, and S for Side arch
+    //* indexIncrement:
+    //*   a basis function can consists of multiple shapes. The value here can be 0 or 1.
+    //*   1: the beginning of a new basis function
+    //*   0: not increment, meaning the current shape is combined with the shape before with value 1
+    //* XL, XU, YL, YU, ZL, ZU: the range limit of each direction
+    //* dir: normal direction of the rectangle that supports the shape
+    //*   0 for x-dir, 1 for y-dir, 2 for z-dir
+    //* shapeDir: shape varying direction
+    //*   0 for x-dir, 1 for y-dir, 2 for z-dir
+    //* shapeNormalDistrance: signed distance between the support rectangle and the neighborhoold rectangle
+    //*   positive: decaying in the positive direction
+    //*   negative: decaying in the negative direction
+    //* shapeShift: shift parameter that indicates the shift of starting point of
 
 
 
-	this->clear();
+    this->clear();
     this->isInstantiable = true;
 
     ifstream ifile(filename.c_str());
     //* Check if open successfully
-	if (!ifile){
+    if (!ifile){
         cerr << "ERROR: cannot open the file: " << filename << endl;
-		return;
-	}
+        return;
+    }
 
-	ifile >> this->nWires;
-	this->nWirePanels 		= new int[this->nWires];
-	this->Cmat				= new float[this->nWires*this->nWires];
-	for ( int i=0; i<this->nWires; i++){
-		ifile >> this->nWirePanels[i];
-	}
-	ifile >> this->nPanels;
-	this->panels			= new float	[this->nPanels][3][4];
-	this->dirs				= new int	[this->nPanels];
-	this->areas	 			= new float	[this->nPanels];
-	this->indexIncrements 	= new int	[this->nPanels];
-	this->basisTypes		= new char	[this->nPanels];
-	this->basisDirs			= new int	[this->nPanels];
-	this->basisZs			= new float	[this->nPanels];
-	this->basisShifts		= new float	[this->nPanels];
+    ifile >> this->nWires;
+    this->nWirePanels 		= new int[this->nWires];
+    this->Cmat				= new float[this->nWires*this->nWires];
+    for ( int i=0; i<this->nWires; i++){
+        ifile >> this->nWirePanels[i];
+    }
+    ifile >> this->nPanels;
+    this->panels			= new float	[this->nPanels][3][4];
+    this->dirs				= new int	[this->nPanels];
+    this->areas	 			= new float	[this->nPanels];
+    this->indexIncrements 	= new int	[this->nPanels];
+    this->basisTypes		= new char	[this->nPanels];
+    this->basisDirs			= new int	[this->nPanels];
+    this->basisZs			= new float	[this->nPanels];
+    this->basisShifts		= new float	[this->nPanels];
 
-	this->nCoefs = 0;
+    this->nCoefs = 0;
 
-	for (int i=0; i<this->nPanels; i++){
-		ifile >> this->basisTypes[i];
-		ifile >> this->indexIncrements[i];
-		this->nCoefs += this->indexIncrements[i];
+    for (int i=0; i<this->nPanels; i++){
+        ifile >> this->basisTypes[i];
+        ifile >> this->indexIncrements[i];
+        this->nCoefs += this->indexIncrements[i];
 
-		ifile >> this->panels[i][X][MIN];
-		ifile >> this->panels[i][X][MAX];
-		this->panels[i][X][LENGTH]
-			= this->panels[i][X][MAX] - this->panels[i][X][MIN];
-		this->panels[i][X][CENTER]
-			= (this->panels[i][X][MAX]+this->panels[i][X][MIN])/2;
+        ifile >> this->panels[i][X][MIN];
+        ifile >> this->panels[i][X][MAX];
+        this->panels[i][X][LENGTH]
+            = this->panels[i][X][MAX] - this->panels[i][X][MIN];
+        this->panels[i][X][CENTER]
+            = (this->panels[i][X][MAX]+this->panels[i][X][MIN])/2;
 
-		ifile >> this->panels[i][Y][MIN];
-		ifile >> this->panels[i][Y][MAX];
-		this->panels[i][Y][LENGTH]
-			= this->panels[i][Y][MAX] - this->panels[i][Y][MIN];
-		this->panels[i][Y][CENTER]
-			= (this->panels[i][Y][MAX]+this->panels[i][Y][MIN])/2;
+        ifile >> this->panels[i][Y][MIN];
+        ifile >> this->panels[i][Y][MAX];
+        this->panels[i][Y][LENGTH]
+            = this->panels[i][Y][MAX] - this->panels[i][Y][MIN];
+        this->panels[i][Y][CENTER]
+            = (this->panels[i][Y][MAX]+this->panels[i][Y][MIN])/2;
 
-		ifile >> this->panels[i][Z][MIN];
-		ifile >> this->panels[i][Z][MAX];
-		this->panels[i][Z][LENGTH]
-			= this->panels[i][Z][MAX] - this->panels[i][Z][MIN];
-		this->panels[i][Z][CENTER]
-			= (this->panels[i][Z][MAX]+this->panels[i][Z][MIN])/2;
+        ifile >> this->panels[i][Z][MIN];
+        ifile >> this->panels[i][Z][MAX];
+        this->panels[i][Z][LENGTH]
+            = this->panels[i][Z][MAX] - this->panels[i][Z][MIN];
+        this->panels[i][Z][CENTER]
+            = (this->panels[i][Z][MAX]+this->panels[i][Z][MIN])/2;
 
-		ifile >> this->dirs[i];
-		switch (this->dirs[i]){
-		case X:
-			this->areas[i] = this->panels[i][Y][LENGTH] * this->panels[i][Z][LENGTH];
-			break;
-		case Y:
-			this->areas[i] = this->panels[i][Z][LENGTH] * this->panels[i][X][LENGTH];
-			break;
-		case Z:
-			this->areas[i] = this->panels[i][X][LENGTH] * this->panels[i][Y][LENGTH];
-		}
+        ifile >> this->dirs[i];
+        switch (this->dirs[i]){
+        case X:
+            this->areas[i] = this->panels[i][Y][LENGTH] * this->panels[i][Z][LENGTH];
+            break;
+        case Y:
+            this->areas[i] = this->panels[i][Z][LENGTH] * this->panels[i][X][LENGTH];
+            break;
+        case Z:
+            this->areas[i] = this->panels[i][X][LENGTH] * this->panels[i][Y][LENGTH];
+        }
 
-		ifile >> this->basisDirs[i];
-		ifile >> this->basisZs[i];
-		ifile >> this->basisShifts[i];
-	}
+        ifile >> this->basisDirs[i];
+        ifile >> this->basisZs[i];
+        ifile >> this->basisShifts[i];
+    }
 
 
-	// this->P 	= new float[this->nCoefs*this->nCoefs];
-	// this->rhs 	= new float[this->nCoefs*this->nWires];
-	// this->coefs = new float[this->nCoefs*this->nWires];
+    // this->P 	= new float[this->nCoefs*this->nCoefs];
+    // this->rhs 	= new float[this->nCoefs*this->nWires];
+    // this->coefs = new float[this->nCoefs*this->nWires];
 
-	// construct nWireCoefs
-	this->nWireCoefs = new int[this->nWires];
-	int ind = -1;
-	for (int i=0; i<this->nWires; i++){
-		this->nWireCoefs[i] = 0;
-		for (int j=0; j<this->nWirePanels[i]; j++){
-			ind++;
-			this->nWireCoefs[i] += this->indexIncrements[ind];
-		}
-	}
+    // construct nWireCoefs
+    this->nWireCoefs = new int[this->nWires];
+    int ind = -1;
+    for (int i=0; i<this->nWires; i++){
+        this->nWireCoefs[i] = 0;
+        for (int j=0; j<this->nWirePanels[i]; j++){
+            ind++;
+            this->nWireCoefs[i] += this->indexIncrements[ind];
+        }
+    }
 
-	this->isSolved = false;
-	this->isLoaded = true;
+    this->isSolved = false;
+    this->isLoaded = true;
 
-	ifile.close();
+    ifile.close();
 
     #ifdef DEBUG_ASPECT_RATIO_VALIDITY
     if( this->isPanelAspectRatioValid() == false ){
@@ -440,13 +440,13 @@ void Caplet::loadCapletFile(const std::string filename){
 
 
 void Caplet::saveCmat(const std::string filename){
-	if (this->isSolved){
-		std::ofstream ofile(filename.c_str());
-		if (!ofile.is_open()){
+    if (this->isSolved){
+        std::ofstream ofile(filename.c_str());
+        if (!ofile.is_open()){
             cerr << "ERROR: cannot write Cmat file: " << filename << endl;
-			return;
-		}
-		//* DOUBLE block was commented before. Double check this.
+            return;
+        }
+        //* DOUBLE block was commented before. Double check this.
         switch(this->mode){
         case FAST_GALERKIN:
             for (int i=0; i<this->nWires; i++){
@@ -456,7 +456,7 @@ void Caplet::saveCmat(const std::string filename){
                 ofile << endl;
             }
             break;
-		case DOUBLE_GALERKIN:            
+        case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
             for (int i=0; i<this->nWires; i++){
                 for (int j=0; j<this->nWires; j++){
@@ -469,18 +469,18 @@ void Caplet::saveCmat(const std::string filename){
             break;
         }
 
-		ofile.close();
-	}
+        ofile.close();
+    }
 }
 
 
 void Caplet::saveCoefs(const std::string filename){
-	if (this->isSolved){
+    if (this->isSolved){
         ofstream ofile(filename.c_str());
-		if (!ofile){
+        if (!ofile){
             cerr << "ERROR: cannot write the file: " << filename << endl;
-			return;
-		}
+            return;
+        }
         switch(this->mode){
         case FAST_GALERKIN:
             for (int i=0; i<this->nCoefs; i++){
@@ -503,17 +503,17 @@ void Caplet::saveCoefs(const std::string filename){
             ;
         }
 
-		ofile.close();
-	}
+        ofile.close();
+    }
 }
 
 void Caplet::extractC(MODE mode){
-	this->mode = mode;
+    this->mode = mode;
 
     #ifdef CAPLET_TIMER
-	this->fillingTime = 0;
-	this->solvingTime = 0;
-	this->totalTime = 0;
+    this->fillingTime = 0;
+    this->solvingTime = 0;
+    this->totalTime = 0;
     #endif
 
     #ifdef CAPLET_INIT_ATAN_LOG
@@ -529,29 +529,29 @@ void Caplet::extractC(MODE mode){
     this->modifyPanelAspectRatio();
 
     if ( rank==0 ){
-		std::cout << "Number of conductors        : " << this->nWires << std::endl;
-		std::cout << "Number of basis functions   : " << this->nCoefs << std::endl;
+        std::cout << "Number of conductors        : " << this->nWires << std::endl;
+        std::cout << "Number of basis functions   : " << this->nCoefs << std::endl;
         std::cout << "Number of basis shapes      : " << this->nPanels << std::endl;
     }
-	for (int iter = 0; iter < N_ITER; iter++){
+    for (int iter = 0; iter < N_ITER; iter++){
         switch ( mode ){
-    	case DOUBLE_GALERKIN:
-    		this->extractCGalerkinDouble();
-    		break;
+        case DOUBLE_GALERKIN:
+            this->extractCGalerkinDouble();
+            break;
         case FAST_GALERKIN:
-			this->extractCGalerkin();
-			break;
+            this->extractCGalerkin();
+            break;
         case DOUBLE_COLLOCATION:
             this->extractCCollocationDouble();
             break;
-		}
-	}
+        }
+    }
     this->isSolved = true;
 
     MPI::Finalize();
     if( rank!= 0 ){
-		return;
-	}
+        return;
+    }
 
 
     #ifdef CAPLET_TIMER
@@ -563,9 +563,9 @@ void Caplet::extractC(MODE mode){
     //* Print Cmat
     std::cout << "Cmat" << std::endl;
     this->printCmat();
-	std::cout << endl;
+    std::cout << endl;
 
-	#ifdef DEBUG_PRINT_P
+    #ifdef DEBUG_PRINT_P
     std::cout << "Store system matrix in 'pmatrix' and rhs in 'rhs'" << std::endl;
     ofstream pmatrixOut("pmatrix");
     printP(pmatrixOut);
@@ -584,7 +584,7 @@ void Caplet::extractC(MODE mode){
 //*
 //*
 void Caplet::extractCCollocationDouble(){
-	if ( this->isLoaded == true ){
+    if ( this->isLoaded == true ){
         //* Allocate system memory for double precision
         if (MPI::COMM_WORLD.Get_rank()==0){
             this->dP 	= new double[this->nCoefs*this->nCoefs];
@@ -600,9 +600,9 @@ void Caplet::extractCCollocationDouble(){
             return;
         }
 
-	}else{
-		std::cerr << "ERROR: structure file is not yet loaded" << std::endl;
-	}
+    }else{
+        std::cerr << "ERROR: structure file is not yet loaded" << std::endl;
+    }
     #ifdef CAPLET_TIMER
     this->timeStart = MPI::Wtime();
     #endif
@@ -616,18 +616,18 @@ void Caplet::extractCCollocationDouble(){
 
 
     //* Solve the system
-	int* 	ipiv = new int[this->nCoefs];
-	int  	info;
+    int* 	ipiv = new int[this->nCoefs];
+    int  	info;
 
     dgesv_(&this->nCoefs, &this->nWires, this->dP, &this->nCoefs, ipiv,
             this->dcoefs, &this->nCoefs, &info);
 
-	delete[] ipiv;
+    delete[] ipiv;
 
-	char 	transA 	= 't';
-	char 	transB 	= 'n';
-	double 	alpha 	= 4*pi*epsilon0;
-	double 	beta 	= 0.0;
+    char 	transA 	= 't';
+    char 	transB 	= 'n';
+    double 	alpha 	= 4*pi*epsilon0;
+    double 	beta 	= 0.0;
 
     //* Use matrix-matrix product to compute Cmat from coefs
     dgemm_(&transA, &transB,
@@ -638,9 +638,9 @@ void Caplet::extractCCollocationDouble(){
 
     #ifdef CAPLET_TIMER
     this->timeAfterSolving = MPI::Wtime();
- 	this->fillingTime 	+= this->timeAfterFilling - this->timeStart;
- 	this->solvingTime 	+= this->timeAfterSolving - this->timeAfterFilling;
- 	this->totalTime		+= this->timeAfterSolving - this->timeStart;
+    this->fillingTime 	+= this->timeAfterFilling - this->timeStart;
+    this->solvingTime 	+= this->timeAfterSolving - this->timeAfterFilling;
+    this->totalTime		+= this->timeAfterSolving - this->timeStart;
     #endif
 }
 
@@ -1073,15 +1073,15 @@ void Caplet::generateGalerkinPMatrixMPI(){
         #ifdef DEBUG_DETECT_NAN_INF_ENTRY
         #include <cmath>
         if (isnan(result) || isinf(result)){
-        	cout << "Detect nan or inf: (" << i << "," << j << ") = " << result << endl;
-        	cout << "i: " 	<< panels[i][X][MIN] << ", " << panels[i][X][MAX] << ", " 
-        		 			<< panels[i][Y][MIN] << ", " << panels[i][Y][MAX] << ", " 
-        		 			<< panels[i][Z][MIN] << ", " << panels[i][Z][MAX] << ". Dir: "
-        		 			<< dirs[i] << ", " << basisDirs[i] << endl;
-        	cout << "j: " 	<< panels[j][X][MIN] << ", " << panels[j][X][MAX] << ", " 
-        					<< panels[j][Y][MIN] << ", " << panels[j][Y][MAX] << ", " 	
-        					<< panels[j][Z][MIN] << ", " << panels[j][Z][MAX] << ". Dir: "
-        					<< dirs[j] << ", " << basisDirs[j] << endl;
+            cout << "Detect nan or inf: (" << i << "," << j << ") = " << result << endl;
+            cout << "i: " 	<< panels[i][X][MIN] << ", " << panels[i][X][MAX] << ", "
+                            << panels[i][Y][MIN] << ", " << panels[i][Y][MAX] << ", "
+                            << panels[i][Z][MIN] << ", " << panels[i][Z][MAX] << ". Dir: "
+                            << dirs[i] << ", " << basisDirs[i] << endl;
+            cout << "j: " 	<< panels[j][X][MIN] << ", " << panels[j][X][MAX] << ", "
+                            << panels[j][Y][MIN] << ", " << panels[j][Y][MAX] << ", "
+                            << panels[j][Z][MIN] << ", " << panels[j][Z][MAX] << ". Dir: "
+                            << dirs[j] << ", " << basisDirs[j] << endl;
         }
         #endif
 
@@ -1193,15 +1193,15 @@ void Caplet::generateGalerkinPMatrixDoubleMPI(){
         #ifdef DEBUG_DETECT_NAN_INF_ENTRY
         #include <cmath>
         if (isnan(result) || isinf(result)){
-        	cout << "Detect nan or inf: (" << i << "," << j << ") = " << result << endl;
-        	cout << "i: " 	<< panels[i][X][MIN] << ", " << panels[i][X][MAX] << ", " 
-        		 			<< panels[i][Y][MIN] << ", " << panels[i][Y][MAX] << ", " 
-        		 			<< panels[i][Z][MIN] << ", " << panels[i][Z][MAX] << ". Dir: "
-        		 			<< dirs[i] << ", " << basisDirs[i] << endl;
-        	cout << "j: " 	<< panels[j][X][MIN] << ", " << panels[j][X][MAX] << ", " 
-        					<< panels[j][Y][MIN] << ", " << panels[j][Y][MAX] << ", " 	
-        					<< panels[j][Z][MIN] << ", " << panels[j][Z][MAX] << ". Dir: "
-        					<< dirs[j] << ", " << basisDirs[j] << endl;
+            cout << "Detect nan or inf: (" << i << "," << j << ") = " << result << endl;
+            cout << "i: " 	<< panels[i][X][MIN] << ", " << panels[i][X][MAX] << ", "
+                            << panels[i][Y][MIN] << ", " << panels[i][Y][MAX] << ", "
+                            << panels[i][Z][MIN] << ", " << panels[i][Z][MAX] << ". Dir: "
+                            << dirs[i] << ", " << basisDirs[i] << endl;
+            cout << "j: " 	<< panels[j][X][MIN] << ", " << panels[j][X][MAX] << ", "
+                            << panels[j][Y][MIN] << ", " << panels[j][Y][MAX] << ", "
+                            << panels[j][Z][MIN] << ", " << panels[j][Z][MAX] << ". Dir: "
+                            << dirs[j] << ", " << basisDirs[j] << endl;
         }
         #endif
 
@@ -1569,36 +1569,36 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2){
 
 
 void Caplet::generateRHS(){
-	int inc = 1;
-	int nRHS = this->nWires*this->nCoefs;
-	float alpha = 0.0f;
-	sscal_(&nRHS, &alpha, this->coefs, &inc);
+    int inc = 1;
+    int nRHS = this->nWires*this->nCoefs;
+    float alpha = 0.0f;
+    sscal_(&nRHS, &alpha, this->coefs, &inc);
 
-	int rowIndex = -1;
-	int columnIndex = 0;
-	int coefCounter = 0;
-	for ( int i=0; i < this->nPanels; i++ ){
-		rowIndex 	+= this->indexIncrements[i];
-		coefCounter += this->indexIncrements[i];
+    int rowIndex = -1;
+    int columnIndex = 0;
+    int coefCounter = 0;
+    for ( int i=0; i < this->nPanels; i++ ){
+        rowIndex 	+= this->indexIncrements[i];
+        coefCounter += this->indexIncrements[i];
 
-		if ( coefCounter > this->nWireCoefs[columnIndex] ){
-			coefCounter = 1;
-			columnIndex++;
-		}
+        if ( coefCounter > this->nWireCoefs[columnIndex] ){
+            coefCounter = 1;
+            columnIndex++;
+        }
 
-		float (*func)(float x, float w) = &arch;
-		switch (this->basisTypes[i]){
-		case 'S':
-			func = &side;
-		case 'A':
-			float b = this->panels[i][this->basisDirs[i]][LENGTH];
-			float xm = (b)/2;
-			float xr = (b)/2;
-			int dir = (this->basisDirs[i]+1)%3;
-			if ( dir==dirs[i] ){
-				dir = (dir+1)%3;
-			}
-			float w  = this->panels[i][dir][LENGTH];
+        float (*func)(float x, float w) = &arch;
+        switch (this->basisTypes[i]){
+        case 'S':
+            func = &side;
+        case 'A':
+            float b = this->panels[i][this->basisDirs[i]][LENGTH];
+            float xm = (b)/2;
+            float xr = (b)/2;
+            int dir = (this->basisDirs[i]+1)%3;
+            if ( dir==dirs[i] ){
+                dir = (dir+1)%3;
+            }
+            float w  = this->panels[i][dir][LENGTH];
 
             //* Gauss quad for computing area integral of shapes
             float val = 0;
@@ -1615,287 +1615,287 @@ void Caplet::generateRHS(){
             //* End of Gauss quad
 
             this->areas[i] = val*xr*w;
-		}
+        }
 
-		this->coefs[ columnIndex*this->nCoefs + rowIndex ] += this->areas[i];
-	}
-	scopy_(&nRHS, this->coefs, &inc, this->rhs, &inc);
+        this->coefs[ columnIndex*this->nCoefs + rowIndex ] += this->areas[i];
+    }
+    scopy_(&nRHS, this->coefs, &inc, this->rhs, &inc);
 }
 
 
 void Caplet::modifyPanelAspectRatio(){
     //* Aspect ratio of all panels cannot exceed MAX_ASPECT_RAIO
-	if ( this->isLoaded == false ){
-		std::cerr << "ERROR: not yet load any structure " << std::endl;
-		std::cerr << "       Unable to check structure validity" << std::endl;
+    if ( this->isLoaded == false ){
+        std::cerr << "ERROR: not yet load any structure " << std::endl;
+        std::cerr << "       Unable to check structure validity" << std::endl;
 
-		std::exit(1);
-	}
+        std::exit(1);
+    }
     const float maxRatio = MAX_ASPECT_RATIO;
 
-	std::list<float> 	panelsTemp[3][2];
-	std::list<int>		dirsTemp;
-	std::list<float>	areasTemp;
-	std::list<int>		indexIncrementsTemp;
-	std::list<char>		basisTypesTemp;
-	std::list<int>		basisDirsTemp;
-	std::list<float>	basisZsTemp;
-	std::list<float>	basisShiftsTemp;
+    std::list<float> 	panelsTemp[3][2];
+    std::list<int>		dirsTemp;
+    std::list<float>	areasTemp;
+    std::list<int>		indexIncrementsTemp;
+    std::list<char>		basisTypesTemp;
+    std::list<int>		basisDirsTemp;
+    std::list<float>	basisZsTemp;
+    std::list<float>	basisShiftsTemp;
 
-	int currentWireIndex = 0;
-	int currentWirePanelCount = 0;
-	int nCurrentWirePanels = this->nWirePanels[0];
-	int nFinalPanels = this->nPanels;
+    int currentWireIndex = 0;
+    int currentWirePanelCount = 0;
+    int nCurrentWirePanels = this->nWirePanels[0];
+    int nFinalPanels = this->nPanels;
 
-	for ( int i=0; i<this->nPanels; i++ ){
+    for ( int i=0; i<this->nPanels; i++ ){
 
-		currentWirePanelCount ++;
-		if ( currentWirePanelCount > this->nWirePanels[currentWireIndex] ){
-			currentWirePanelCount = 1;
-			this->nWirePanels[currentWireIndex] = nCurrentWirePanels;
-			currentWireIndex ++;
-			nCurrentWirePanels = this->nWirePanels[currentWireIndex];
-		}
-		float ba = this->panels[i][ (this->dirs[i]+1)%3 ][LENGTH] / this->panels[i][ (this->dirs[i]+2)%3 ][LENGTH];
+        currentWirePanelCount ++;
+        if ( currentWirePanelCount > this->nWirePanels[currentWireIndex] ){
+            currentWirePanelCount = 1;
+            this->nWirePanels[currentWireIndex] = nCurrentWirePanels;
+            currentWireIndex ++;
+            nCurrentWirePanels = this->nWirePanels[currentWireIndex];
+        }
+        float ba = this->panels[i][ (this->dirs[i]+1)%3 ][LENGTH] / this->panels[i][ (this->dirs[i]+2)%3 ][LENGTH];
         if (  ( ba > maxRatio )  ||  ( 1/ba > maxRatio )  ){
             //* need to split to reduce aspact ratio of a panel
-			int nSplit = 2;
-			while ( ( ba/nSplit > maxRatio )  ||  ( 1/ba/nSplit > maxRatio ) ){
-				nSplit++;
-			}
-			int   splitDir = ( ( ba>1 ) ? ( (dirs[i]+1)%3 ) : ( (dirs[i]+2)%3 ) );
-			float currentCoord = this->panels[i][splitDir][0];
-			float sublength = this->panels[i][splitDir][LENGTH] / nSplit;
+            int nSplit = 2;
+            while ( ( ba/nSplit > maxRatio )  ||  ( 1/ba/nSplit > maxRatio ) ){
+                nSplit++;
+            }
+            int   splitDir = ( ( ba>1 ) ? ( (dirs[i]+1)%3 ) : ( (dirs[i]+2)%3 ) );
+            float currentCoord = this->panels[i][splitDir][0];
+            float sublength = this->panels[i][splitDir][LENGTH] / nSplit;
 
-			for ( int j=0; j<nSplit; j++){
-				panelsTemp[splitDir][0].push_back( currentCoord );
-				currentCoord += sublength;
-				panelsTemp[splitDir][1].push_back( currentCoord );
+            for ( int j=0; j<nSplit; j++){
+                panelsTemp[splitDir][0].push_back( currentCoord );
+                currentCoord += sublength;
+                panelsTemp[splitDir][1].push_back( currentCoord );
 
-				panelsTemp[ (splitDir+1)%3 ][0].push_back( this->panels[i][ (splitDir+1)%3 ][0] );
-				panelsTemp[ (splitDir+1)%3 ][1].push_back( this->panels[i][ (splitDir+1)%3 ][1] );
-				panelsTemp[ (splitDir+2)%3 ][0].push_back( this->panels[i][ (splitDir+2)%3 ][0] );
-				panelsTemp[ (splitDir+2)%3 ][1].push_back( this->panels[i][ (splitDir+2)%3 ][1] );
+                panelsTemp[ (splitDir+1)%3 ][0].push_back( this->panels[i][ (splitDir+1)%3 ][0] );
+                panelsTemp[ (splitDir+1)%3 ][1].push_back( this->panels[i][ (splitDir+1)%3 ][1] );
+                panelsTemp[ (splitDir+2)%3 ][0].push_back( this->panels[i][ (splitDir+2)%3 ][0] );
+                panelsTemp[ (splitDir+2)%3 ][1].push_back( this->panels[i][ (splitDir+2)%3 ][1] );
 
-				dirsTemp.push_back(this->dirs[i]);
-				areasTemp.push_back(this->areas[i]/nSplit);
-				if ( j==0 ){
+                dirsTemp.push_back(this->dirs[i]);
+                areasTemp.push_back(this->areas[i]/nSplit);
+                if ( j==0 ){
                     //* The first sub-panel after split. Needs index increment.
-					indexIncrementsTemp.push_back(this->indexIncrements[i]);
-				}else{
+                    indexIncrementsTemp.push_back(this->indexIncrements[i]);
+                }else{
                     //* The rest of sub-panel after split. No index increment needed.
-					indexIncrementsTemp.push_back(0);
-				}
-				basisTypesTemp.push_back(this->basisTypes[i]);
-				basisDirsTemp.push_back(this->basisDirs[i]);
-				basisZsTemp.push_back(this->basisZs[i]);
+                    indexIncrementsTemp.push_back(0);
+                }
+                basisTypesTemp.push_back(this->basisTypes[i]);
+                basisDirsTemp.push_back(this->basisDirs[i]);
+                basisZsTemp.push_back(this->basisZs[i]);
 
-				if ( this->basisDirs[i] == splitDir ){
-					if ( this->basisZs[i] > 0 ){ // decaying in the positive direction
-						basisShiftsTemp.push_back(this->basisShifts[i] + j*sublength);
-					}else{ // decaying in the negative direction
-						basisShiftsTemp.push_back(this->basisShifts[i] + (nSplit-1-j)*sublength);
-					}
-				}else{
-					basisShiftsTemp.push_back(this->basisShifts[i]);
-				}
+                if ( this->basisDirs[i] == splitDir ){
+                    if ( this->basisZs[i] > 0 ){ // decaying in the positive direction
+                        basisShiftsTemp.push_back(this->basisShifts[i] + j*sublength);
+                    }else{ // decaying in the negative direction
+                        basisShiftsTemp.push_back(this->basisShifts[i] + (nSplit-1-j)*sublength);
+                    }
+                }else{
+                    basisShiftsTemp.push_back(this->basisShifts[i]);
+                }
 
-				if ( j!=0 ){
-					nFinalPanels ++;
-					nCurrentWirePanels ++;
-				}
-			}
+                if ( j!=0 ){
+                    nFinalPanels ++;
+                    nCurrentWirePanels ++;
+                }
+            }
         }
         else{
             //* no need to split. simply push back
-			panelsTemp[X][0].push_back(this->panels[i][X][0]);
-			panelsTemp[X][1].push_back(this->panels[i][X][1]);
-			panelsTemp[Y][0].push_back(this->panels[i][Y][0]);
-			panelsTemp[Y][1].push_back(this->panels[i][Y][1]);
-			panelsTemp[Z][0].push_back(this->panels[i][Z][0]);
-			panelsTemp[Z][1].push_back(this->panels[i][Z][1]);
+            panelsTemp[X][0].push_back(this->panels[i][X][0]);
+            panelsTemp[X][1].push_back(this->panels[i][X][1]);
+            panelsTemp[Y][0].push_back(this->panels[i][Y][0]);
+            panelsTemp[Y][1].push_back(this->panels[i][Y][1]);
+            panelsTemp[Z][0].push_back(this->panels[i][Z][0]);
+            panelsTemp[Z][1].push_back(this->panels[i][Z][1]);
 
-			dirsTemp.push_back(this->dirs[i]);
-			areasTemp.push_back(this->areas[i]);
-			indexIncrementsTemp.push_back(this->indexIncrements[i]);
-			basisTypesTemp.push_back(this->basisTypes[i]);
-			basisDirsTemp.push_back(this->basisDirs[i]);
-			basisZsTemp.push_back(this->basisZs[i]);
-			basisShiftsTemp.push_back(this->basisShifts[i]);
-		}
-	}
-	this->nPanels = nFinalPanels;
-	this->nWirePanels[currentWireIndex] = nCurrentWirePanels;
+            dirsTemp.push_back(this->dirs[i]);
+            areasTemp.push_back(this->areas[i]);
+            indexIncrementsTemp.push_back(this->indexIncrements[i]);
+            basisTypesTemp.push_back(this->basisTypes[i]);
+            basisDirsTemp.push_back(this->basisDirs[i]);
+            basisZsTemp.push_back(this->basisZs[i]);
+            basisShiftsTemp.push_back(this->basisShifts[i]);
+        }
+    }
+    this->nPanels = nFinalPanels;
+    this->nWirePanels[currentWireIndex] = nCurrentWirePanels;
 
     //* Rebuild panel information based on new panel list with split panels
-	delete[] this->panels;
-	delete[] this->dirs;
+    delete[] this->panels;
+    delete[] this->dirs;
     delete[] this->indexIncrements;
-	delete[] this->basisTypes;
-	delete[] this->basisDirs;
-	delete[] this->basisZs;
-	delete[] this->basisShifts;
+    delete[] this->basisTypes;
+    delete[] this->basisDirs;
+    delete[] this->basisZs;
+    delete[] this->basisShifts;
 
-	this->panels			= new float	[this->nPanels][3][4];
-	this->dirs				= new int	[this->nPanels];
-	this->areas	 			= new float	[this->nPanels];
-	this->indexIncrements 	= new int	[this->nPanels];
-	this->basisTypes		= new char	[this->nPanels];
-	this->basisDirs			= new int	[this->nPanels];
-	this->basisZs			= new float	[this->nPanels];
-	this->basisShifts		= new float	[this->nPanels];
+    this->panels			= new float	[this->nPanels][3][4];
+    this->dirs				= new int	[this->nPanels];
+    this->areas	 			= new float	[this->nPanels];
+    this->indexIncrements 	= new int	[this->nPanels];
+    this->basisTypes		= new char	[this->nPanels];
+    this->basisDirs			= new int	[this->nPanels];
+    this->basisZs			= new float	[this->nPanels];
+    this->basisShifts		= new float	[this->nPanels];
 
-	for ( int i=0; i<this->nPanels; i++ ){
-		this->panels[i][X][0] = panelsTemp[X][0].front(); panelsTemp[X][0].pop_front();
-		this->panels[i][X][1] = panelsTemp[X][1].front(); panelsTemp[X][1].pop_front();
-		this->panels[i][Y][0] = panelsTemp[Y][0].front(); panelsTemp[Y][0].pop_front();
-		this->panels[i][Y][1] = panelsTemp[Y][1].front(); panelsTemp[Y][1].pop_front();
-		this->panels[i][Z][0] = panelsTemp[Z][0].front(); panelsTemp[Z][0].pop_front();
-		this->panels[i][Z][1] = panelsTemp[Z][1].front(); panelsTemp[Z][1].pop_front();
+    for ( int i=0; i<this->nPanels; i++ ){
+        this->panels[i][X][0] = panelsTemp[X][0].front(); panelsTemp[X][0].pop_front();
+        this->panels[i][X][1] = panelsTemp[X][1].front(); panelsTemp[X][1].pop_front();
+        this->panels[i][Y][0] = panelsTemp[Y][0].front(); panelsTemp[Y][0].pop_front();
+        this->panels[i][Y][1] = panelsTemp[Y][1].front(); panelsTemp[Y][1].pop_front();
+        this->panels[i][Z][0] = panelsTemp[Z][0].front(); panelsTemp[Z][0].pop_front();
+        this->panels[i][Z][1] = panelsTemp[Z][1].front(); panelsTemp[Z][1].pop_front();
 
-		this->panels[i][X][LENGTH] = this->panels[i][X][1] - this->panels[i][X][0];
-		this->panels[i][Y][LENGTH] = this->panels[i][Y][1] - this->panels[i][Y][0];
-		this->panels[i][Z][LENGTH] = this->panels[i][Z][1] - this->panels[i][Z][0];
+        this->panels[i][X][LENGTH] = this->panels[i][X][1] - this->panels[i][X][0];
+        this->panels[i][Y][LENGTH] = this->panels[i][Y][1] - this->panels[i][Y][0];
+        this->panels[i][Z][LENGTH] = this->panels[i][Z][1] - this->panels[i][Z][0];
 
-		this->panels[i][X][CENTER] = (this->panels[i][X][1] + this->panels[i][X][0])/2;
-		this->panels[i][Y][CENTER] = (this->panels[i][Y][1] + this->panels[i][Y][0])/2;
-		this->panels[i][Z][CENTER] = (this->panels[i][Z][1] + this->panels[i][Z][0])/2;
+        this->panels[i][X][CENTER] = (this->panels[i][X][1] + this->panels[i][X][0])/2;
+        this->panels[i][Y][CENTER] = (this->panels[i][Y][1] + this->panels[i][Y][0])/2;
+        this->panels[i][Z][CENTER] = (this->panels[i][Z][1] + this->panels[i][Z][0])/2;
 
-		this->dirs[i] = dirsTemp.front(); dirsTemp.pop_front();
-		this->areas[i] = areasTemp.front(); areasTemp.pop_front();
+        this->dirs[i] = dirsTemp.front(); dirsTemp.pop_front();
+        this->areas[i] = areasTemp.front(); areasTemp.pop_front();
 
-		this->indexIncrements[i] = indexIncrementsTemp.front(); indexIncrementsTemp.pop_front();
+        this->indexIncrements[i] = indexIncrementsTemp.front(); indexIncrementsTemp.pop_front();
 
-		this->basisTypes[i] = basisTypesTemp.front(); basisTypesTemp.pop_front();
-		this->basisDirs[i] = basisDirsTemp.front(); basisDirsTemp.pop_front();
-		this->basisZs[i] = basisZsTemp.front(); basisZsTemp.pop_front();
-		this->basisShifts[i] = basisShiftsTemp.front(); basisShiftsTemp.pop_front();
-	}
+        this->basisTypes[i] = basisTypesTemp.front(); basisTypesTemp.pop_front();
+        this->basisDirs[i] = basisDirsTemp.front(); basisDirsTemp.pop_front();
+        this->basisZs[i] = basisZsTemp.front(); basisZsTemp.pop_front();
+        this->basisShifts[i] = basisShiftsTemp.front(); basisShiftsTemp.pop_front();
+    }
 }
 
 
 shape_t Caplet::selectShape(int panel){
-	switch ( this->basisTypes[panel] ){
-	case 'A':
-		return &arch;
-		break;
-	case 'S':
-		return &side;
-		break;
-	default:
-		return 0;
-	}
+    switch ( this->basisTypes[panel] ){
+    case 'A':
+        return &arch;
+        break;
+    case 'S':
+        return &side;
+        break;
+    default:
+        return 0;
+    }
 }
 
 
 int  Caplet::getNPanels() const{
-	return this->nPanels;
+    return this->nPanels;
 }
 
 
 int  Caplet::getNCoefs() const{
-	return this->nCoefs;
+    return this->nCoefs;
 }
 
 
 int  Caplet::getSizeP() const{
-	return this->nCoefs * this->nCoefs;
+    return this->nCoefs * this->nCoefs;
 }
 
 
 int  Caplet::getSizeCoefs() const{
-	return this->nCoefs * this->nWires;
+    return this->nCoefs * this->nWires;
 }
 
 
 int  Caplet::getSizeCmat() const{
-	return this->nWires * this->nWires;
+    return this->nWires * this->nWires;
 }
 
 
 const float* const Caplet::getCmat() const{
-	return this->Cmat;
+    return this->Cmat;
 }
 
 
 float Caplet::compareCmatError(const float* const cmatRef, ERROR_REF option) const{
-	using std::abs;
+    using std::abs;
 
-	float* const cmatError = new float[this->getSizeCmat()];
-	int n = this->nWires;
-	float maxError = 0.0f;
-	int maxErrorI = 0;
-	int maxErrorJ = 0;
+    float* const cmatError = new float[this->getSizeCmat()];
+    int n = this->nWires;
+    float maxError = 0.0f;
+    int maxErrorI = 0;
+    int maxErrorJ = 0;
 
-	for ( int i=0; i<n; i++){
-		for ( int j=0; j<n; j++ ){
+    for ( int i=0; i<n; i++){
+        for ( int j=0; j<n; j++ ){
 
-			float errRef = 0.0f;
-			switch (option){
-			case DIAGONAL:
-				errRef = (cmatRef[ i + n*i ]);
-				break;
-			case SELF:
-				errRef = (cmatRef[ i + n*j ]);
-			}
-			float thisError = abs( (this->Cmat[ i + n*j] - cmatRef[ i + n*j ])/errRef * 100 );
-			cmatError[ i + n*j ] = thisError;
+            float errRef = 0.0f;
+            switch (option){
+            case DIAGONAL:
+                errRef = (cmatRef[ i + n*i ]);
+                break;
+            case SELF:
+                errRef = (cmatRef[ i + n*j ]);
+            }
+            float thisError = abs( (this->Cmat[ i + n*j] - cmatRef[ i + n*j ])/errRef * 100 );
+            cmatError[ i + n*j ] = thisError;
 
-			if ( maxError < thisError ){
-				maxError  = thisError;
-				maxErrorI = i;
-				maxErrorJ = j;
-			}
-		}
-	}
-	print_matrix(cmatError, n, n, "Cmat Error (%)", 'a');
+            if ( maxError < thisError ){
+                maxError  = thisError;
+                maxErrorI = i;
+                maxErrorJ = j;
+            }
+        }
+    }
+    print_matrix(cmatError, n, n, "Cmat Error (%)", 'a');
 
-	std::cout << "Max error = " << std::fixed << maxError << "% at (" << maxErrorI << "," << maxErrorJ << ")" << std::endl;
+    std::cout << "Max error = " << std::fixed << maxError << "% at (" << maxErrorI << "," << maxErrorJ << ")" << std::endl;
 
-	switch( option ){
-	case DIAGONAL:
-		std::cout << "    (w.r.t. the row diagonal)" << std::endl;
-		break;
-	case SELF:
-		std::cout << "    (w.r.t. itself)" << std::endl;
-	}
-	std::cout << std::endl;
+    switch( option ){
+    case DIAGONAL:
+        std::cout << "    (w.r.t. the row diagonal)" << std::endl;
+        break;
+    case SELF:
+        std::cout << "    (w.r.t. itself)" << std::endl;
+    }
+    std::cout << std::endl;
 
-	delete [] cmatError;
-	return maxError;
+    delete [] cmatError;
+    return maxError;
 }
 
 
 float Caplet::compareCmatError(const Caplet *const caplet, ERROR_REF option) const{
-	const float* const cmatRef = caplet->getCmat();
-	return this->compareCmatError(cmatRef, option);
+    const float* const cmatRef = caplet->getCmat();
+    return this->compareCmatError(cmatRef, option);
 }
 
 
 float Caplet::compareCmatError(const std::string filename, ERROR_REF option) const{
-	const int n = this->nWires;
+    const int n = this->nWires;
 
-	float* cmatRef = new float[n*n];
+    float* cmatRef = new float[n*n];
 
-	std::ifstream ifile(filename.c_str());
-	if (!ifile){
-		std::cerr << "ERROR: cannot open the file: " << filename << std::endl;
-		std::exit(1);
-	}
+    std::ifstream ifile(filename.c_str());
+    if (!ifile){
+        std::cerr << "ERROR: cannot open the file: " << filename << std::endl;
+        std::exit(1);
+    }
 
-	std::string		lineTemp;
-	for ( int i=0; i<n; i++ ){
-		getline(ifile, lineTemp);
-		std::stringstream	stringTokenizer(lineTemp);
-		for (int j=0; j<n; j++){
-			stringTokenizer >> cmatRef[ i + n*j ];
-		}
-	}
+    std::string		lineTemp;
+    for ( int i=0; i<n; i++ ){
+        getline(ifile, lineTemp);
+        std::stringstream	stringTokenizer(lineTemp);
+        for (int j=0; j<n; j++){
+            stringTokenizer >> cmatRef[ i + n*j ];
+        }
+    }
 
-	float maxError = this->compareCmatError(cmatRef, option);
-	delete [] cmatRef;
+    float maxError = this->compareCmatError(cmatRef, option);
+    delete [] cmatRef;
 
-	return maxError;
+    return maxError;
 }
 
 

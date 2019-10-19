@@ -30,13 +30,13 @@ namespace caplet{
 
 template <class T>
 void print_vector(T* x, int nx, const std::string name){
-	if (name.empty()==false) {
-		std::cout << name << std::endl;
-	}
-	for (int i=0; i<nx; i++){
-		std::cout << x[i] << " ";
-	}
-	std::cout << std::endl;
+    if (name.empty()==false) {
+        std::cout << name << std::endl;
+    }
+    for (int i=0; i<nx; i++){
+        std::cout << x[i] << " ";
+    }
+    std::cout << std::endl;
 }
 template void print_vector<float> (float*  x, int nx, const std::string name);
 template void print_vector<double>(double* x, int nx, const std::string name);
@@ -44,39 +44,39 @@ template void print_vector<int>   (int*    x, int nx, const std::string name);
 
 template <class T>
 void print_matrix(T* A, int m, int n, const std::string name, char uplo, std::ostream &out=std::cout){
-	if (name.empty()==false) {
-		out << name << std::endl;
-	}
-	// Fortran order
+    if (name.empty()==false) {
+        out << name << std::endl;
+    }
+    // Fortran order
 
-	if ( uplo == 'a' ){
-		for (int i=0; i<m; i++){
-			for (int j=0; j<n; j++){
+    if ( uplo == 'a' ){
+        for (int i=0; i<m; i++){
+            for (int j=0; j<n; j++){
                 out << std::setw(14) << std::setprecision(6)  << A[i+m*j];
-			}
+            }
             out << std::endl;
-		}
-	}else if ( uplo == 'u' ){
-		for (int i=0; i<m; i++){
-			for (int j=0; j<i; j++){
+        }
+    }else if ( uplo == 'u' ){
+        for (int i=0; i<m; i++){
+            for (int j=0; j<i; j++){
                 out << std::setw(14) << std::setprecision(6) << 0;
-			}
-			for (int j=i; j<n; j++){
+            }
+            for (int j=i; j<n; j++){
                 out << std::setw(14)  << std::setprecision(6) << A[i+m*j];
-			}
+            }
             out << std::endl;
-		}
-	}else if ( uplo == 'l' ){
-		for (int i=0; i<m; i++){
-			for (int j=0; j<=i; j++){
+        }
+    }else if ( uplo == 'l' ){
+        for (int i=0; i<m; i++){
+            for (int j=0; j<=i; j++){
                 out << std::setw(14) << std::setprecision(6) << A[i+m*j];
-			}
-			for (int j=i+1; j<n; j++){
+            }
+            for (int j=i+1; j<n; j++){
                 out << std::setw(14) << std::setprecision(6)  << 0.0f;
-			}
+            }
             out << std::endl;
-		}
-	}
+        }
+    }
 }
 template void print_matrix<float> (float*  x, int m, int n, const std::string name, char uplo, std::ostream& out=std::cout);
 template void print_matrix<double>(double* x, int m, int n, const std::string name, char uplo, std::ostream& out=std::cout);

@@ -49,7 +49,7 @@ void printVersion(){
 }
 
 int main(int argc, char *argv[]){
-	using namespace caplet;
+    using namespace caplet;
 
     string fileName;
     string folderPath = ".";
@@ -61,25 +61,25 @@ int main(int argc, char *argv[]){
 
     bool flagDouble = false; //* single precision fast solution
 
-	list<string> argvList;
-	for (int i=1; i<argc; ++i){ //* skip command name
-		argvList.push_back(argv[i]);
-	}
-	
+    list<string> argvList;
+    for (int i=1; i<argc; ++i){ //* skip command name
+        argvList.push_back(argv[i]);
+    }
+
     //* Read options
-	for ( list<string>::iterator each=argvList.begin(); 
+    for ( list<string>::iterator each=argvList.begin();
           each!=argvList.end(); ){
 
         //* Read Cmat file name
-		if (each->compare("-o")==0){
-			each = argvList.erase(each);
+        if (each->compare("-o")==0){
+            each = argvList.erase(each);
             if (each == argvList.end()){
                 printUsage(argv[0]);
                 return 0;
             }
-			fileNameCmat = *each;
-			each = argvList.erase(each);
-		}
+            fileNameCmat = *each;
+            each = argvList.erase(each);
+        }
 
         //* Flag -f for single-precision fast solution
         else if (each->compare("-d")==0 || each->compare("--double")==0 ){
@@ -94,9 +94,9 @@ int main(int argc, char *argv[]){
         }
 
         else{
-		  ++each;
+          ++each;
         }
-	}
+    }
 
     //* Check if nonknown options
     for ( list<string>::iterator each=argvList.begin();

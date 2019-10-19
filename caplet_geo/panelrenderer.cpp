@@ -210,15 +210,15 @@ void PanelRenderer::computeGLDisplayBoundary()
 
 
 void PanelRenderer::initView(){
-	translationX = xc;//0.0f;
-	translationY = yc;//0.0f;
-	translationZ = zc;
+    translationX = xc;//0.0f;
+    translationY = yc;//0.0f;
+    translationZ = zc;
 
     scale = 0.9f;
 
-	rotationX = 0.0f;
-	rotationY = 0.0f;
-	rotationZ = 0.0f;
+    rotationX = 0.0f;
+    rotationY = 0.0f;
+    rotationZ = 0.0f;
 
     resizeGL(this->width(), this->height());
     updateGL();
@@ -586,117 +586,117 @@ void PanelRenderer::conductorFPList2RectGLForDisplay()
 
 void PanelRenderer::mousePressEvent(QMouseEvent *event)
 {
-	lastPos = event->pos();
+    lastPos = event->pos();
 
-	enum MOUSE_MODE { ROTATE, TRANSLATE, ZOOM };
-	enum MOUSE_AXIS { AXIS_XY, AXIS_Z };
+    enum MOUSE_MODE { ROTATE, TRANSLATE, ZOOM };
+    enum MOUSE_AXIS { AXIS_XY, AXIS_Z };
 
-	int	lx = lastPos.x();
-	int	ly = lastPos.y();
-	QPoint center = rect().center();
+    int	lx = lastPos.x();
+    int	ly = lastPos.y();
+    QPoint center = rect().center();
 
-	int xCenter = center.x();
-	int yCenter = center.y();
-	int maxRadius2 = (width()>height())? height()/2 : width()/2;
+    int xCenter = center.x();
+    int yCenter = center.y();
+    int maxRadius2 = (width()>height())? height()/2 : width()/2;
     int lastRadius2 = static_cast<int>(std::sqrt((lx-xCenter)*(lx-xCenter) + (ly-yCenter)*(ly-yCenter)));
 
-	mouseAxis = ( lastRadius2 > maxRadius2 * 0.9 ) ? AXIS_Z : AXIS_XY;
+    mouseAxis = ( lastRadius2 > maxRadius2 * 0.9 ) ? AXIS_Z : AXIS_XY;
 
 
-	switch( event->modifiers() ){
-	case Qt::CTRL: // zoom
-		mouseMode = ZOOM;
-		break;
-	case Qt::SHIFT: // translate
-		mouseMode = TRANSLATE;
-		break;
-	default:
-		mouseMode = ROTATE;
-	}
+    switch( event->modifiers() ){
+    case Qt::CTRL: // zoom
+        mouseMode = ZOOM;
+        break;
+    case Qt::SHIFT: // translate
+        mouseMode = TRANSLATE;
+        break;
+    default:
+        mouseMode = ROTATE;
+    }
 }
 
 
 void PanelRenderer::mouseMoveEvent(QMouseEvent *event)
 {
-	enum MOUSE_MODE { ROTATE, TRANSLATE, ZOOM };
-	enum MOUSE_AXIS { AXIS_XY, AXIS_Z };
+    enum MOUSE_MODE { ROTATE, TRANSLATE, ZOOM };
+    enum MOUSE_AXIS { AXIS_XY, AXIS_Z };
 
-	int	lx = lastPos.x();
-	int	ly = lastPos.y();
-	int	ex = event->x();
-	int ey = event->y();
+    int	lx = lastPos.x();
+    int	ly = lastPos.y();
+    int	ex = event->x();
+    int ey = event->y();
 
 
-	GLfloat dx = GLfloat(ex - lx) / width();
-	GLfloat dy = GLfloat(ey - ly) / height();
+    GLfloat dx = GLfloat(ex - lx) / width();
+    GLfloat dy = GLfloat(ey - ly) / height();
 
-	switch ( mouseMode ){
-	case ROTATE:
-		if ( mouseAxis == AXIS_Z ){
-			int xCenter = rect().center().x();
-			int yCenter = rect().center().y();
-			if ( lx > xCenter ){
-				rotationZ -= 180 * dy;
-			}else{
-				rotationZ += 180 * dy;
-			}
-			if ( ly > yCenter ){
-				rotationZ += 180 * dx;
-			}else{
-				rotationZ -= 180 * dx;
-			}
-		}else{
-			rotationX += 180 * dy;
-			rotationY += 180 * dx;
-		}
-		break;
-	case TRANSLATE:
-		if ( mouseAxis == AXIS_Z ){
+    switch ( mouseMode ){
+    case ROTATE:
+        if ( mouseAxis == AXIS_Z ){
+            int xCenter = rect().center().x();
+            int yCenter = rect().center().y();
+            if ( lx > xCenter ){
+                rotationZ -= 180 * dy;
+            }else{
+                rotationZ += 180 * dy;
+            }
+            if ( ly > yCenter ){
+                rotationZ += 180 * dx;
+            }else{
+                rotationZ -= 180 * dx;
+            }
+        }else{
+            rotationX += 180 * dy;
+            rotationY += 180 * dx;
+        }
+        break;
+    case TRANSLATE:
+        if ( mouseAxis == AXIS_Z ){
             translationZ += dy*scale*maxr;
-		}else{
+        }else{
             translationX -= dx*scale*maxr;
             translationY += dy*scale*maxr;
-		}
-		break;
-	case ZOOM:
-		scale *= 1+dx*2-dy*2;
+        }
+        break;
+    case ZOOM:
+        scale *= 1+dx*2-dy*2;
 
-	}
+    }
 
-	updateGL();
-	lastPos = event->pos();
+    updateGL();
+    lastPos = event->pos();
 }
 
 void PanelRenderer::keyPressEvent(QKeyEvent *event){
 
-	switch(event->key()){
-	case Qt::Key_F:
-		initView();
-		switch( event->modifiers() ){
-		case Qt::SHIFT: // xz view
-			rotationX = 90;
-			rotationY = 180;
-			break;
-		case Qt::CTRL:  // yz view
-			rotationX = -90;
-			rotationZ = -90;
-		}
-		updateGL();
-		break;
-	case Qt::Key_D:
-		initView();
-		switch( event->modifiers() ){
-		case Qt::SHIFT: // -xz view
-			rotationX = -90;
-			break;
-		case Qt::CTRL:  // -yz view
-			rotationX = -90;
-			rotationZ =  90;
-			break;
-		default:
-			rotationY = 180;
-		}
-		updateGL();
+    switch(event->key()){
+    case Qt::Key_F:
+        initView();
+        switch( event->modifiers() ){
+        case Qt::SHIFT: // xz view
+            rotationX = 90;
+            rotationY = 180;
+            break;
+        case Qt::CTRL:  // yz view
+            rotationX = -90;
+            rotationZ = -90;
+        }
+        updateGL();
+        break;
+    case Qt::Key_D:
+        initView();
+        switch( event->modifiers() ){
+        case Qt::SHIFT: // -xz view
+            rotationX = -90;
+            break;
+        case Qt::CTRL:  // -yz view
+            rotationX = -90;
+            rotationZ =  90;
+            break;
+        default:
+            rotationY = 180;
+        }
+        updateGL();
         break;
     case Qt::Key_R:
         initView();
@@ -705,7 +705,7 @@ void PanelRenderer::keyPressEvent(QKeyEvent *event){
         rotationZ = 60;
         updateGL();
         break;
-	}
+    }
 }
 
 

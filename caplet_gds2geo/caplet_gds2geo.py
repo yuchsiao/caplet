@@ -49,10 +49,9 @@ def main():
     with open(args.filename, 'rb') as gds_stream:
         lib = gdsii.library.Library.load(gds_stream)
 
-
     unit = lib.physical_unit
     struc = lib.pop(0)
-    LAYER  = enum('BOTTOM', 'TOP', 'NAME')
+    LAYER = enum('BOTTOM', 'TOP', 'NAME')
     
     # read and sort out structures
     metal_struc = [None]*len(metal_index)
@@ -68,21 +67,21 @@ def main():
         if isinstance(part, gdsii.elements.Boundary):
             key = str(part.layer) + '_' + str(part.data_type)
             layer_info = metal.get(key)
-            if layer_info != None: # part is in a metal layer
-                layer_info = metal.get( layer_info[LAYER.NAME] )
+            if layer_info is not None:  # part is in a metal layer
+                layer_info = metal.get(layer_info[LAYER.NAME])
                 temp  = layer_info[LAYER.NAME]
                 metal_struc[temp].append(part.xy)
                 continue
 
             layer_info = via.get(key)
-            if layer_info != None: # part is a via
-                layer_info = via.get( layer_info[LAYER.NAME] )
+            if layer_info is not None:  # part is a via
+                layer_info = via.get(layer_info[LAYER.NAME])
                 via_struc[layer_info[LAYER.NAME]].append(part.xy)
                 continue
         
         elif isinstance(part, gdsii.elements.Path):
             key = str(part.layer) + '_' + str(part.data_type)
-            layer_info = metal.get( metal.get(key)[LAYER.NAME] ) # must be in a metal layer
+            layer_info = metal.get(metal.get(key)[LAYER.NAME])  # must be in a metal layer
     
             rects = path2rects(part.xy, part.width)
             for rect in rects:
@@ -98,21 +97,20 @@ def main():
         output.write( str( int(n_metal) ) + '\n' )
 
         for i in range(n_metal):
-            output.write( str(i) + ', ' 
-                          + str( int(metal[ metal_index[i] ][LAYER.BOTTOM]) ) + ', '
-                          + str( int(metal[ metal_index[i] ][LAYER.TOP]) )    + '\n' )
+            output.write(str(i) + ', '
+                         + str(int(metal[metal_index[i]][LAYER.BOTTOM])) + ', '
+                         + str(int(metal[metal_index[i]][LAYER.TOP]))    + '\n')
 
         # output via def
         n_via = len(via_index)
-        output.write( str( int(n_via) ) + '\n' )
+        output.write(str(int(n_via) ) + '\n' )
     
         for i in range(n_via):
-            output.write( str(i+n_metal) + ', '
-                          + str( int(via[ via_index[i] ][LAYER.BOTTOM]) ) + ', '
-                          + str( int(via[ via_index[i] ][LAYER.TOP]) )    + ', '
-                          + str( int(metal[ via_connect[ via_index[i] ][0] ][LAYER.NAME]) ) + ', '
-                          + str( int(metal[ via_connect[ via_index[i] ][1] ][LAYER.NAME]) ) + '\n' )
-
+            output.write(str(i+n_metal) + ', '
+                         + str(int(via[via_index[i]][LAYER.BOTTOM])) + ', '
+                         + str(int(via[via_index[i]][LAYER.TOP]))    + ', '
+                         + str(int(metal[via_connect[ via_index[i]][0]][LAYER.NAME])) + ', '
+                         + str(int(metal[via_connect[ via_index[i]][1]][LAYER.NAME])) + '\n')
 
         # output metal and struc
         metal_via_struc = [metal_struc, via_struc]
@@ -120,56 +118,57 @@ def main():
         for each_struc in metal_via_struc:
             for i in range(len(each_struc)):
                 index += 1
-                output.write( str(index) + '\n' )
-                output.write( str(len(each_struc[i])) + '\n' )
+                output.write(str(index) + '\n')
+                output.write(str(len(each_struc[i])) + '\n')
                 for j in range(len(each_struc[i])):
                     poly = each_struc[i].popleft()
-                    output.write( str( len(poly) ) + '\n' )
+                    output.write(str(len(poly)) + '\n')
                     for pnt in poly:
-                        output.write( str( int(pnt[0]) ) + ', ' + str( int(pnt[1]) ) + '\n' )
+                        output.write(str(int(pnt[0])) + ', ' + str(int(pnt[1])) + '\n')
 
         # complete
         print("Success.")
         
 
 def boundary2point(boundary):
-    return [ (boundary[0], boundary[2]),
-             (boundary[1], boundary[2]),
-             (boundary[1], boundary[3]),
-             (boundary[0], boundary[3]),
-             (boundary[0], boundary[2])]
+    return [(boundary[0], boundary[2]),
+            (boundary[1], boundary[2]),
+            (boundary[1], boundary[3]),
+            (boundary[0], boundary[3]),
+            (boundary[0], boundary[2])]
+
 
 def path2rects(xy, width):
     rects = collections.deque()
-    width = width/2;
+    width = width/2
 
     xy_deque = collections.deque(xy)
     pnt1 = xy_deque.popleft()
     pnt2 = xy_deque[0]
-    if pnt1[1]==pnt2[1]: # x-dir
-        if pnt1[0]<pnt2[0]: # pnt1 is left to pnt2
+    if pnt1[1] == pnt2[1]:  # x-dir
+        if pnt1[0] < pnt2[0]:  # pnt1 is left to pnt2
             xy_deque.appendleft((pnt1[0]-width, pnt1[1]))
-        else: # pnt1 is right to pnt2
+        else:  # pnt1 is right to pnt2
             xy_deque.appendleft((pnt1[0]+width, pnt1[1]))
             
-    elif pnt1[0]==pnt2[0]: # y-dir
-        if pnt1[1]<pnt2[1]: # pnt1 is below pnt2
+    elif pnt1[0] == pnt2[0]:  # y-dir
+        if pnt1[1] < pnt2[1]:  # pnt1 is below pnt2
             xy_deque.appendleft((pnt1[0], pnt1[1]-width))
-        else: # pnt1 is above pnt2
+        else:  # pnt1 is above pnt2
             xy_deque.appendleft((pnt1[0], pnt1[1]+width))
             
     pnt1 = xy_deque.pop()
     pnt2 = xy_deque[-1]
-    if pnt1[1]==pnt2[1]: # x-dir
-        if pnt1[0]<pnt2[0]: # pnt1 is left to pnt2
+    if pnt1[1] == pnt2[1]:  # x-dir
+        if pnt1[0] < pnt2[0]:  # pnt1 is left to pnt2
             xy_deque.append((pnt1[0]+width, pnt1[1]))
-        else: # pnt1 is right to pnt2
+        else:  # pnt1 is right to pnt2
             xy_deque.append((pnt1[0]-width, pnt1[1]))
             
-    elif pnt1[0]==pnt2[0]: # y-dir
-        if pnt1[1]<pnt2[1]: # pnt1 is below pnt2
+    elif pnt1[0] == pnt2[0]:  # y-dir
+        if pnt1[1] < pnt2[1]:  # pnt1 is below pnt2
             xy_deque.append((pnt1[0], pnt1[1]+width))
-        else: # pnt1 is above pnt2
+        else:  # pnt1 is above pnt2
             xy_deque.append((pnt1[0], pnt1[1]-width))
             
     for i in range(len(xy_deque)-1):
@@ -177,14 +176,14 @@ def path2rects(xy, width):
         pnt2 = xy_deque[0]
         
         boundary = [0]*4
-        if pnt1[1] == pnt2[1]: # x-dir
+        if pnt1[1] == pnt2[1]:  # x-dir
             boundary[2] = pnt1[1]-width
             boundary[3] = pnt1[1]+width
             
-            if pnt1[0] < pnt2[0]: # pnt1 is left to pnt2
+            if pnt1[0] < pnt2[0]:  # pnt1 is left to pnt2
                 boundary[0] = pnt1[0]+width
                 boundary[1] = pnt2[0]+width
-            else: # pnt1 is right to pnt2
+            else:  # pnt1 is right to pnt2
                 boundary[0] = pnt2[0]-width
                 boundary[1] = pnt1[0]-width
                         
@@ -192,10 +191,10 @@ def path2rects(xy, width):
             boundary[0] = pnt1[0]-width
             boundary[1] = pnt1[0]+width
     
-            if pnt1[1] < pnt2[1]: # pnt1 is below pnt2
+            if pnt1[1] < pnt2[1]:  # pnt1 is below pnt2
                 boundary[2] = pnt1[1]+width
                 boundary[3] = pnt2[1]+width
-            else: # pnt1 is above pnt2
+            else:  # pnt1 is above pnt2
                 boundary[2] = pnt2[1]-width
                 boundary[3] = pnt1[1]-width
                      
@@ -252,7 +251,7 @@ def parse_layerdef(layerdef):
                         status = STATUS.VIA
                     else:
                         sys.stderr.write('Error: No such a block type: {0}\n'
-                                         .format(line.split('{')[0]) )
+                                         .format(line.split('{')[0]))
                         sys.exit(1)
 
                 else:
@@ -262,12 +261,12 @@ def parse_layerdef(layerdef):
                             unit = float(parameter[1])
                         except ValueError:
                             val = parameter[1]
-                            if val=='um' or val=='u':
+                            if val == 'um' or val == 'u':
                                 unit = 1e-6
 
-                            elif val=='nm' or val=='n':
+                            elif val == 'nm' or val == 'n':
                                 unit = 1e-9
-                            elif val=='am' or val=='a':
+                            elif val == 'am' or val == 'a':
                                 unit = 1e-10
                             else:
                                 raise
@@ -287,7 +286,7 @@ def parse_layerdef(layerdef):
                     metal.setdefault(name, [bottom, top, len(metal_index)])
                     metal.setdefault(key,  [bottom, top, name])
                     metal_index.append(name)
-                except:
+                except Exception:
                     print('Format Error: '+line)
                     raise
 
@@ -307,11 +306,12 @@ def parse_layerdef(layerdef):
                     via.setdefault(key,  [bottom, top, name])
                     via_connect.setdefault(name, [bottom_name, top_name])
                     via_index.append(name)
-                except:
+                except Exception:
                     print('Format Error: '+line)
                     raise
 
-    return (metal, metal_index, via, via_index, via_connect)
+    return metal, metal_index, via, via_index, via_connect
+
 
 if __name__ == "__main__":
     sys.exit(main())
