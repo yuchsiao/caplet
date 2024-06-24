@@ -84,14 +84,16 @@ public:
         std::stringstream ss2;
         ss2 << "(" << nMetal2 << ", " << nVia2 << ")";
         m_layerInfo2 = ss2.str();
+        m_what = "Conductor layer not compatible: " + m_layerInfo1 + " != " + m_layerInfo2;
     }
     virtual ~ConductorLayerNotCompatibleError() throw() {}
     virtual const char* what() const throw(){
-        return ("Conductor layer not compatible: " + m_layerInfo1 + " != " + m_layerInfo2).c_str();
+        return m_what.c_str();
     }
 private:
     std::string m_layerInfo1;
     std::string m_layerInfo2;
+    std::string m_what;
 };
 
 
