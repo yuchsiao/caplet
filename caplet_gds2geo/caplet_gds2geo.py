@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python3
 
 # AUTHOR: Yu-Chung Hsiao
 # DATE  : Jan. 31, 2013
