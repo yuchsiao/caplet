@@ -24,7 +24,7 @@ Features
 
 Screenshots
 -----------
-![GUI](http://www.feature.space/caplet/img/gui_color_by_layer.png "GUI and Piecewise constant basis functions")
+![GUI](images/gui_color_by_conductor.png "GUI color by conductor")
 
 
 License
