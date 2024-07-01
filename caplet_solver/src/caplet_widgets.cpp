@@ -43,7 +43,7 @@ template void print_vector<double>(double* x, int nx, const std::string name);
 template void print_vector<int>   (int*    x, int nx, const std::string name);
 
 template <class T>
-void print_matrix(T* A, int m, int n, const std::string name, char uplo, std::ostream &out=std::cout){
+void print_matrix(T* A, int m, int n, const std::string name, char uplo, std::ostream &out){
     if (name.empty()==false) {
         out << name << std::endl;
     }
@@ -78,9 +78,9 @@ void print_matrix(T* A, int m, int n, const std::string name, char uplo, std::os
         }
     }
 }
-template void print_matrix<float> (float*  x, int m, int n, const std::string name, char uplo, std::ostream& out=std::cout);
-template void print_matrix<double>(double* x, int m, int n, const std::string name, char uplo, std::ostream& out=std::cout);
-template void print_matrix<int>   (int*    x, int m, int n, const std::string name, char uplo, std::ostream& out=std::cout);
+template void print_matrix<float> (float*  x, int m, int n, const std::string name, char uplo, std::ostream& out);
+template void print_matrix<double>(double* x, int m, int n, const std::string name, char uplo, std::ostream& out);
+template void print_matrix<int>   (int*    x, int m, int n, const std::string name, char uplo, std::ostream& out);
 
 
 

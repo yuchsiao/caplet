@@ -77,13 +77,16 @@ typedef std::list<ExtractionInfo> ExtractionInfoList;
 class FileNotFoundError : public std::runtime_error{
 public:
     explicit FileNotFoundError(const std::string &fileName)
-        : runtime_error(fileName), m_msg(fileName){}
+        : runtime_error(fileName), m_msg(fileName) {
+        m_what = std::string(m_msg) + " is not found.";
+    }
     virtual ~FileNotFoundError() throw() {}
     virtual const char* what() const throw(){
-        return (std::string(m_msg)+" is not found.").c_str();
+        return m_what.c_str();
     }
 private:
     std::string m_msg;
+    std::string m_what;
 };
 
 class GeoLoader{
